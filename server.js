@@ -44,17 +44,18 @@ const VARIANT_MAP = {
     '16x20': 15137,
     '24x36': 15139,
   },
-  wood: {
-    '4x6':   19293,
-    '5x7':   19293,
-    '8x10':  19293,
-    '11x14': 19298,
-    '16x20':     6,
-    '24x36':   825,
+  framed: {
+    // Enhanced Matte Paper Framed Poster (Black frame) - product 2
+    '4x6':    4651, // no 4x6; maps to 8x10 ($20.35)
+    '5x7':    4651, // no 5x7; maps to 8x10 ($20.35)
+    '8x10':   4651,  // $20.35
+    '11x14': 14292,  // $30.09
+    '16x20':  4399,  // $41.77
+    '24x36':     4,  // $74.41
   },
 };
 
-const PRODUCT_ID_MAP = { poster: 1, canvas: 3, metal: 588, wood: 3 };
+const PRODUCT_ID_MAP = { poster: 1, canvas: 3, metal: 588, framed: 2 };
 
 function normSize(dim) {
   return String(dim || '')
@@ -67,7 +68,8 @@ function normSize(dim) {
 function getVariantId(materialId, sizeDim) {
   const mat = (materialId || 'poster').toLowerCase()
     .replace('flat metal', 'metal')
-    .replace('flat_metal', 'metal');
+    .replace('flat_metal', 'metal')
+    .replace('wood', 'framed');
   const sz = normSize(sizeDim || '8x10');
   const matMap = VARIANT_MAP[mat] || VARIANT_MAP.poster;
   return matMap[sz] || matMap['8x10'];
