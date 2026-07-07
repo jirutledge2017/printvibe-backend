@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const catalog = require('./catalog');
 require('dotenv').config();
 
 const app = express();
@@ -237,6 +238,32 @@ app.get('/api/shipping', async (req, res) => {
     console.error('[server] shipping exception:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// ── GET /api/products ─────────────────────────────────────────────
+// All wall-art collections (anime, animals, warriors) for the storefront.
+app.get('/api/products', (req, res) => {
+  const collections = catalog.getCollections();
+  res.json({
+    collections,
+    total: collections.reduce((n, c) => n + c.count, 0),
+  });
+});
+
+// ── GET /api/products/:collection ─────────────────────────────────
+// A single collection by id, e.g. /api/products/anime
+app.get('/api/products/:collection', (req, res) => {
+  const collection = catalog.getCollection(req.params.collection);
+  if (!collection) return res.status(404).json({ error: 'Collection not found' });
+  res.json({ collection });
+});
+
+// ── GET /api/product/:id ──────────────────────────────────────────
+// A single art piece by id, e.g. /api/product/anime-01
+app.get('/api/product/:id', (req, res) => {
+  const product = catalog.getProduct(req.params.id);
+  if (!product) return res.status(404).json({ error: 'Product not found' });
+  res.json({ product });
 });
 
 // ── GET /api/variants/:productId ──────────────────────────────────
