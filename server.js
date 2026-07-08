@@ -1,11 +1,15 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const fetch = require('node-fetch');
 require('dotenv').config();
 
 const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+
+// Serve the GildedWalls.com storefront
+app.use(express.static(path.join(__dirname, 'public')));
 
 const PRINTFUL_API = 'https://api.printful.com';
 const TOKEN = process.env.PRINTFUL_TOKEN;
@@ -85,9 +89,15 @@ function printfulHeaders() {
 // ── HEALTH CHECK ─────────────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  service: 'PrintVibe Backend',
+  service: 'GildedWalls Backend',
   stripe: !!stripe,
   printful: !!TOKEN,
+}));
+
+// ── GET /api/config ───────────────────────────────────────────────
+// Public runtime config for the storefront (publishable key only — never secrets).
+app.get('/api/config', (_req, res) => res.json({
+  stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null,
 }));
 
 // ── POST /api/create-payment-intent ──────────────────────────────
@@ -110,7 +120,7 @@ app.post('/api/create-payment-intent', async (req, res) => {
       currency: 'usd',
       receipt_email: email || undefined,
       metadata: {
-        source: 'PrintVibe Studio',
+        source: 'GildedWalls.com',
         items: JSON.stringify(items.map(i => i.name || 'Custom Print').join(', ')).slice(0, 500),
       },
     });
@@ -261,7 +271,7 @@ app.get('/api/variants/:productId', async (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`PrintVibe backend running on http://localhost:${PORT}`);
+  console.log(`GildedWalls backend running on http://localhost:${PORT}`);
   if (!TOKEN) console.warn('[WARN] PRINTFUL_TOKEN is not set');
   if (!stripe) console.warn('[WARN] STRIPE_SECRET_KEY is not set');
 });

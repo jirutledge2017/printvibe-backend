@@ -1,7 +1,7 @@
 {
-  "name": "printvibe-backend",
-  "version": "1.0.0",
-  "description": "PrintVibe Studio – Printful order fulfillment backend",
+  "name": "gildedwalls-backend",
+  "version": "2.0.0",
+  "description": "GildedWalls.com – storefront + Stripe payments + Printful order fulfillment",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

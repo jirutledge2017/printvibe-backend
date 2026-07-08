@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GildedWalls — Luxury Wall Art, Printed to Order</title>
+  <meta name="description" content="GildedWalls.com — striking digital art printed on museum-grade poster, gallery canvas, brushed metal, and framed matte. Made to order, shipped worldwide." />
+  <meta property="og:title" content="GildedWalls — Luxury Wall Art, Printed to Order" />
+  <meta property="og:description" content="Striking digital art on poster, canvas, metal & framed prints. Made to order, shipped worldwide." />
+  <meta property="og:image" content="/art/gilded-panther-web.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230c0a10'/%3E%3Ctext x='50' y='68' font-family='Georgia' font-size='58' font-weight='700' text-anchor='middle' fill='%23e8b64c'%3EG%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+  <!-- GOLD DUST CANVAS (fixed, behind everything) -->
+  <canvas id="dust" aria-hidden="true"></canvas>
+
+  <!-- NAV -->
+  <header class="nav" id="navBar">
+    <div class="nav__inner">
+      <a href="#top" class="logo">
+        <span class="logo__mark">G</span>
+        <span class="logo__text">Gilded<span>Walls</span><em>.com</em></span>
+      </a>
+      <nav class="nav__links">
+        <a href="#collection">Collection</a>
+        <a href="#materials">Materials</a>
+        <a href="#how">How It Works</a>
+        <a href="#about">About</a>
+      </nav>
+      <div class="nav__actions">
+        <button class="btn btn--ghost" id="cartBtn" aria-label="Open cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l2.4 12.5a2 2 0 002 1.5h7.5a2 2 0 002-1.5L21 7H6"/><circle cx="9" cy="21" r="1.5"/><circle cx="18" cy="21" r="1.5"/></svg>
+          <span id="cartCount" class="cart-badge">0</span>
+        </button>
+        <a href="#collection" class="btn btn--gold">Shop the Collection</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero__glow hero__glow--1" data-parallax="0.25"></div>
+    <div class="hero__glow hero__glow--2" data-parallax="0.15"></div>
+    <div class="hero__inner">
+      <div class="hero__copy" data-reveal>
+        <p class="eyebrow"><span class="eyebrow__line"></span>Luxury Wall Art · Printed to Order</p>
+        <h1>Art that turns walls<br /><span class="grad">into galleries.</span></h1>
+        <p class="lead">Bold, cinematic pieces printed on museum-grade paper, gallery canvas, brushed metal, and elegant black frames. Every print is made for you, gilded with care, and shipped to your door.</p>
+        <div class="hero__cta">
+          <a href="#collection" class="btn btn--gold btn--lg">Explore the Collection</a>
+          <a href="#materials" class="btn btn--ghost btn--lg">See the Materials</a>
+        </div>
+        <ul class="hero__stats">
+          <li><strong>Museum</strong><span>grade archival inks</span></li>
+          <li><strong>72hr</strong><span>made to order</span></li>
+          <li><strong>Worldwide</strong><span>tracked shipping</span></li>
+        </ul>
+      </div>
+
+      <div class="hero__stage" data-reveal data-reveal-delay="150">
+        <figure class="hero-card hero-card--back tilt" data-tilt>
+          <img src="art/emerald-gaze-web.jpg" alt="Emerald Gaze — black jaguar with teal eyes" loading="eager" />
+        </figure>
+        <figure class="hero-card hero-card--mid tilt" data-tilt>
+          <img src="art/chromatic-king-web.jpg" alt="Chromatic King — lion in vivid color splash" loading="eager" />
+        </figure>
+        <figure class="hero-card hero-card--front tilt" data-tilt>
+          <img src="art/gilded-panther-web.jpg" alt="Gilded Panther — black panther with gold splash" loading="eager" />
+          <figcaption>Gilded Panther · Best Seller</figcaption>
+        </figure>
+      </div>
+    </div>
+    <a class="hero__scrolldown" href="#collection" aria-label="Scroll to collection"><span></span></a>
+  </section>
+
+  <!-- MARQUEE STRIP -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span>Gallery Canvas</span><i>✦</i><span>Brushed Metal</span><i>✦</i><span>Framed Matte</span><i>✦</i><span>Museum Poster</span><i>✦</i><span>Archival Inks</span><i>✦</i><span>Made to Order</span><i>✦</i>
+      <span>Gallery Canvas</span><i>✦</i><span>Brushed Metal</span><i>✦</i><span>Framed Matte</span><i>✦</i><span>Museum Poster</span><i>✦</i><span>Archival Inks</span><i>✦</i><span>Made to Order</span><i>✦</i>
+    </div>
+  </div>
+
+  <!-- COLLECTION -->
+  <section class="collection" id="collection">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow"><span class="eyebrow__line"></span>The Signature Collection</p>
+      <h2>Five statements. <span class="grad">Zero compromise.</span></h2>
+      <p class="sub">Original digital artworks, drenched in gold and color. Choose your piece, pick a material and size, and we handle the rest.</p>
+    </div>
+    <div class="collection__filters" id="filters" data-reveal>
+      <button class="chip is-active" data-cat="all">All Pieces</button>
+      <button class="chip" data-cat="wildlife">Wildlife</button>
+      <button class="chip" data-cat="royalty">Royalty</button>
+      <button class="chip" data-cat="portrait">Portrait</button>
+    </div>
+    <div class="collection__grid" id="grid"></div>
+  </section>
+
+  <!-- MATERIALS -->
+  <section class="materials" id="materials">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow"><span class="eyebrow__line"></span>Four Signature Finishes</p>
+      <h2>Choose how it <span class="grad">catches the light.</span></h2>
+    </div>
+    <div class="materials__grid">
+      <article class="matcard" data-reveal>
+        <div class="matcard__icon">▤</div>
+        <h3>Museum Poster</h3>
+        <p>Heavyweight enhanced matte paper with 12-color archival giclée inks.</p>
+        <span class="matcard__price">from $24</span>
+      </article>
+      <article class="matcard" data-reveal data-reveal-delay="100">
+        <div class="matcard__icon">▦</div>
+        <h3>Gallery Canvas</h3>
+        <p>Hand-stretched 1.5″ gallery wrap on finger-jointed pine. Ready to hang.</p>
+        <span class="matcard__price">from $59</span>
+      </article>
+      <article class="matcard" data-reveal data-reveal-delay="200">
+        <div class="matcard__icon">▩</div>
+        <h3>Brushed Metal</h3>
+        <p>Dye-sublimated aluminum. Vivid, waterproof, unapologetically modern.</p>
+        <span class="matcard__price">from $69</span>
+      </article>
+      <article class="matcard" data-reveal data-reveal-delay="300">
+        <div class="matcard__icon">▣</div>
+        <h3>Framed Matte</h3>
+        <p>Enhanced matte print in a slim black wood frame, glazed and ready to hang.</p>
+        <span class="matcard__price">from $69</span>
+      </article>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="how__bg" data-parallax="0.12"></div>
+    <div class="section-head" data-reveal>
+      <p class="eyebrow"><span class="eyebrow__line"></span>How It Works</p>
+      <h2>From our studio to your wall in <span class="grad">three steps.</span></h2>
+    </div>
+    <ol class="how__steps">
+      <li data-reveal><span class="how__num">01</span><h3>Pick your piece</h3><p>Browse the collection and choose the artwork that speaks to you.</p></li>
+      <li data-reveal data-reveal-delay="120"><span class="how__num">02</span><h3>Choose the finish</h3><p>Poster, canvas, metal, or framed — in sizes from 8×10″ to a statement 24×36″.</p></li>
+      <li data-reveal data-reveal-delay="240"><span class="how__num">03</span><h3>We print &amp; ship</h3><p>Printed to order by our professional print partner and shipped with tracking.</p></li>
+    </ol>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="about__grid">
+      <figure class="about__art tilt" data-tilt data-reveal>
+        <img src="art/crowned-grace-web.jpg" alt="Crowned Grace — portrait with crane and roses" loading="lazy" />
+      </figure>
+      <div class="about__copy" data-reveal data-reveal-delay="150">
+        <p class="eyebrow"><span class="eyebrow__line"></span>About GildedWalls</p>
+        <h2>Every wall deserves <span class="grad">a little gold.</span></h2>
+        <p>GildedWalls.com creates bold, cinematic digital art — kings and queens, midnight predators, splashes of molten gold — and prints it with the same care a gallery would.</p>
+        <p>Every order is produced on demand, color-checked, and protected by our reprint guarantee. If it arrives less than perfect, we make it right.</p>
+        <div class="about__badges">
+          <div><strong>Giclée</strong><span>12-color archival</span></div>
+          <div><strong>On-Demand</strong><span>zero waste printing</span></div>
+          <div><strong>Guaranteed</strong><span>free reprint promise</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="cta__inner" data-reveal>
+      <h2>Ready to gild <span class="grad">your walls?</span></h2>
+      <p>Five signature pieces. Four premium finishes. One statement.</p>
+      <a href="#collection" class="btn btn--gold btn--lg">Shop the Collection</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="foot">
+    <div class="foot__inner">
+      <div class="foot__brand">
+        <span class="logo__mark">G</span>
+        <strong>GildedWalls<em>.com</em></strong>
+        <p>Luxury wall art, printed to order. Poster · Canvas · Metal · Framed.</p>
+      </div>
+      <div class="foot__cols">
+        <div>
+          <h4>Shop</h4>
+          <a href="#collection">The Collection</a>
+          <a href="#materials">Materials</a>
+        </div>
+        <div>
+          <h4>Studio</h4>
+          <a href="#about">About</a>
+          <a href="#how">How it works</a>
+        </div>
+        <div>
+          <h4>Help</h4>
+          <a href="#how">Shipping</a>
+          <a href="#about">Returns</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot__bottom">
+      <span>© <span id="year"></span> GildedWalls.com — All rights reserved.</span>
+      <span>Gilded with care. Printed with passion.</span>
+    </div>
+  </footer>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal" id="productModal" aria-hidden="true">
+    <div class="modal__panel modal__panel--product">
+      <button class="iconbtn modal__close" data-close-modal aria-label="Close">✕</button>
+      <div class="pm">
+        <div class="pm__art"><img id="pmImg" src="" alt="" /></div>
+        <div class="pm__body">
+          <span class="pm__cat" id="pmCat"></span>
+          <h3 id="pmTitle"></h3>
+          <p class="pm__desc" id="pmDesc"></p>
+          <div class="panel__group">
+            <label>Material</label>
+            <div class="chips" id="pmMaterials"></div>
+          </div>
+          <div class="panel__group">
+            <label>Size</label>
+            <div class="chips" id="pmSizes"></div>
+          </div>
+          <div class="pm__price-row">
+            <div><span class="muted">Total</span><strong id="pmPrice">$0</strong></div>
+            <button class="btn btn--gold btn--lg" id="pmAdd">Add to Cart</button>
+          </div>
+          <p class="panel__note">Printed &amp; fulfilled by Printful · Free reprint guarantee · Tracked shipping</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART DRAWER -->
+  <aside class="drawer" id="cartDrawer" aria-hidden="true">
+    <div class="drawer__head">
+      <h3>Your Cart</h3>
+      <button class="iconbtn" id="closeCart" aria-label="Close cart">✕</button>
+    </div>
+    <div class="drawer__body" id="cartBody"><p class="muted">Your cart is empty.</p></div>
+    <div class="drawer__foot">
+      <div class="drawer__total"><span>Subtotal</span><strong id="cartTotal">$0.00</strong></div>
+      <button class="btn btn--gold btn--lg" id="checkoutBtn">Checkout</button>
+      <p class="muted small">Shipping calculated at checkout.</p>
+    </div>
+  </aside>
+
+  <!-- CHECKOUT MODAL -->
+  <div class="modal" id="checkoutModal" aria-hidden="true">
+    <div class="modal__panel modal__panel--checkout">
+      <button class="iconbtn modal__close" data-close-modal aria-label="Close">✕</button>
+      <div class="co">
+        <div class="co__steps">
+          <span class="co__step is-active" data-step-label="1">Shipping</span>
+          <span class="co__step" data-step-label="2">Payment</span>
+          <span class="co__step" data-step-label="3">Done</span>
+        </div>
+
+        <!-- STEP 1: SHIPPING -->
+        <form class="co__pane is-active" id="coShipping" autocomplete="on">
+          <h3>Where should we ship it?</h3>
+          <div class="field-grid">
+            <label class="field field--full"><span>Full name</span><input required name="name" id="fName" autocomplete="name" /></label>
+            <label class="field field--full"><span>Email</span><input required type="email" name="email" id="fEmail" autocomplete="email" /></label>
+            <label class="field field--full"><span>Street address</span><input required name="address1" id="fAddress" autocomplete="address-line1" /></label>
+            <label class="field"><span>City</span><input required name="city" id="fCity" autocomplete="address-level2" /></label>
+            <label class="field"><span>State</span><input name="state" id="fState" maxlength="2" placeholder="CA" autocomplete="address-level1" /></label>
+            <label class="field"><span>ZIP</span><input required name="zip" id="fZip" autocomplete="postal-code" /></label>
+            <label class="field"><span>Country</span>
+              <select id="fCountry" name="country">
+                <option value="US" selected>United States</option>
+                <option value="CA">Canada</option>
+                <option value="GB">United Kingdom</option>
+                <option value="AU">Australia</option>
+              </select>
+            </label>
+          </div>
+          <div id="shipQuote" class="co__quote" hidden></div>
+          <button class="btn btn--gold btn--lg co__next" type="submit" id="toPayment">Continue to Payment</button>
+        </form>
+
+        <!-- STEP 2: PAYMENT -->
+        <div class="co__pane" id="coPayment">
+          <h3>Payment</h3>
+          <div class="co__summary" id="coSummary"></div>
+          <div id="cardWrap">
+            <label class="field field--full"><span>Card details</span>
+              <div id="cardElement" class="card-element"></div>
+            </label>
+            <p class="co__error" id="cardError" hidden></p>
+          </div>
+          <div id="stripeMissing" class="co__notice" hidden>
+            Payments aren't configured yet — add your Stripe keys to the server to enable live checkout.
+          </div>
+          <button class="btn btn--gold btn--lg co__next" id="payBtn">Pay Now</button>
+          <button class="btn btn--ghost co__back" id="backToShipping" type="button">← Back to shipping</button>
+        </div>
+
+        <!-- STEP 3: SUCCESS -->
+        <div class="co__pane co__pane--done" id="coDone">
+          <div class="co__check">✓</div>
+          <h3>Order placed!</h3>
+          <p id="doneMsg">Thank you — your print is heading to production. A confirmation email is on its way.</p>
+          <button class="btn btn--gold" data-close-modal>Keep Browsing</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scrim" id="scrim"></div>
+  <div class="toast" id="toast"></div>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
