@@ -1,7 +1,7 @@
 {
-  "name": "gildedwalls-backend",
+  "name": "stipplecrown-backend",
   "version": "2.0.0",
-  "description": "GildedWalls.com – storefront + Stripe payments + Printful order fulfillment",
+  "description": "StippleCrown.com – storefront + Stripe payments + Printful order fulfillment",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

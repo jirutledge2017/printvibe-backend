@@ -1,5 +1,5 @@
 /* ============================================================
-   GildedWalls.com — dark luxury base with vibrant color pops
+   StippleCrown.com — dark luxury base with vibrant color pops
    ============================================================ */
 :root {
   --bg: #0b0a10;
@@ -658,7 +658,7 @@ section { position: relative; z-index: 2; }
 .drawer__total--sub { font-size: 0.9rem; margin-bottom: 4px; }
 .drawer__total--sub strong { color: var(--teal); font-size: 1rem; font-family: var(--font-body); }
 
-/* ---------- chat (Gilded Concierge) ---------- */
+/* ---------- chat (StippleCrown Concierge) ---------- */
 .chat { position: fixed; right: 22px; bottom: 22px; z-index: 70; }
 .chat__fab {
   display: flex; align-items: center; gap: 10px;

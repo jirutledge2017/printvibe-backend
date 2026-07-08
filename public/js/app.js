@@ -1,6 +1,6 @@
 /* ============================================================
-   GildedWalls.com — storefront app
-   Talks to the GildedWalls backend:
+   StippleCrown.com — storefront app
+   Talks to the StippleCrown backend:
      GET  /api/config                 → { stripePublishableKey }
      POST /api/create-payment-intent  → { clientSecret, amount }
      POST /api/create-order           → submits order to Printful
@@ -361,11 +361,11 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ---------- cart ----------
-const PROMO_CODES = { GILDED10: 0.10 };
+const PROMO_CODES = { CROWN10: 0.10 };
 
 const Cart = (() => {
-  const KEY = 'gildedwalls.cart';
-  const PROMO_KEY = 'gildedwalls.promo';
+  const KEY = 'stipplecrown.cart';
+  const PROMO_KEY = 'stipplecrown.promo';
   let items = [];
   let promo = null;
   try { items = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch {}
@@ -756,7 +756,7 @@ const CustomStudio = (() => {
   });
 })();
 
-// ---------- Gilded Concierge chat ----------
+// ---------- StippleCrown Concierge chat ----------
 const Concierge = (() => {
   const root = $('#chat');
   const body = $('#chatBody');
@@ -828,7 +828,7 @@ $('#newsForm').addEventListener('submit', async (e) => {
     });
     if (!res.ok) throw new Error();
     $('#newsEmail').value = '';
-    toast('Welcome to the Gilded List ✨');
+    toast('Welcome to the StippleCrown List ✨');
   } catch {
     toast('Could not subscribe — try again?');
   }

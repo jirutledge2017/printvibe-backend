@@ -11,10 +11,10 @@ app.use(cors({ origin: '*' }));
 // Large limit so customers can upload their own photos for printing (base64)
 app.use(express.json({ limit: '40mb' }));
 
-// Serve the GildedWalls.com storefront
+// Serve the StippleCrown.com storefront
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Anthropic init — powers the Gilded Concierge chat; optional
+// Anthropic init — powers the StippleCrown Concierge chat; optional
 let anthropic;
 if (process.env.ANTHROPIC_API_KEY) {
   const Anthropic = require('@anthropic-ai/sdk');
@@ -101,7 +101,7 @@ function printfulHeaders() {
 // ── HEALTH CHECK ─────────────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  service: 'GildedWalls Backend',
+  service: 'StippleCrown Backend',
   stripe: !!stripe,
   printful: !!TOKEN,
 }));
@@ -132,7 +132,7 @@ app.post('/api/create-payment-intent', async (req, res) => {
       currency: 'usd',
       receipt_email: email || undefined,
       metadata: {
-        source: 'GildedWalls.com',
+        source: 'StippleCrown.com',
         items: JSON.stringify(items.map(i => i.name || 'Custom Print').join(', ')).slice(0, 500),
       },
     });
@@ -279,9 +279,9 @@ app.post('/api/subscribe', (req, res) => {
 });
 
 // ── POST /api/chat ────────────────────────────────────────────────
-// The Gilded Concierge. Uses Claude when ANTHROPIC_API_KEY is set,
+// The StippleCrown Concierge. Uses Claude when ANTHROPIC_API_KEY is set,
 // otherwise falls back to built-in answers so the widget always works.
-const CONCIERGE_SYSTEM = `You are the Gilded Concierge, the friendly AI shopping assistant for GildedWalls.com — a luxury wall-art store selling bold black-and-gold digital artworks printed to order.
+const CONCIERGE_SYSTEM = `You are the StippleCrown Concierge, the friendly AI shopping assistant for StippleCrown.com — a luxury wall-art store selling bold black-and-gold digital artworks printed to order.
 
 The Signature Collection (all available as Museum Poster, Gallery Canvas, Brushed Metal, or Framed Matte, in 8x10", 11x14", 16x20", 24x36"). Each piece has a "story" — share it warmly when a customer is curious about a piece or its meaning:
 - Gilded Panther (best seller) — black panther veined in molten gold. Story: the panther hunts alone; it wears its solitude like a crown, a thing that was given nothing and took the throne anyway. For where you make your hardest decisions.
@@ -297,14 +297,14 @@ The Signature Collection (all available as Museum Poster, Gallery Canvas, Brushe
 
 Prices: Poster $24-$79 · Canvas $59-$159 · Metal $69-$189 · Framed $69-$169, by size.
 Customers can also upload their OWN photo in the "Print Your Own" studio and order it on any material.
-Promo code GILDED10 gives 10% off. Orders are printed by Printful in ~2-5 business days, then shipped with tracking (live rates shown at checkout, worldwide). Free reprint guarantee if a print arrives damaged.
+Promo code CROWN10 gives 10% off. Orders are printed by Printful in ~2-5 business days, then shipped with tracking (live rates shown at checkout, worldwide). Free reprint guarantee if a print arrives damaged.
 
-Rules: Be warm, concise (2-4 sentences unless asked for detail), and helpful. Recommend specific pieces when asked. Never invent products, prices, or policies not listed here. For order status or refunds, ask the customer to email support with their order number. Do not discuss anything unrelated to GildedWalls, wall art, or home décor — politely steer back.`;
+Rules: Be warm, concise (2-4 sentences unless asked for detail), and helpful. Recommend specific pieces when asked. Never invent products, prices, or policies not listed here. For order status or refunds, ask the customer to email support with their order number. Do not discuss anything unrelated to StippleCrown, wall art, or home décor — politely steer back.`;
 
 const CONCIERGE_FALLBACKS = [
   { re: /(ship|deliver|how long|arrive)/i, a: 'Every piece is printed to order in about 2–5 business days, then shipped with tracking. Live shipping rates for your address are shown at checkout — and we ship worldwide! 📦' },
-  { re: /(price|cost|how much)/i, a: 'Prices depend on material and size: Museum Poster $24–$79, Gallery Canvas $59–$159, Brushed Metal $69–$189, Framed Matte $69–$169. Tip: use code GILDED10 for 10% off! ✨' },
-  { re: /(discount|promo|code|coupon|deal)/i, a: 'Yes! Use code GILDED10 at checkout for 10% off your order. ✨' },
+  { re: /(price|cost|how much)/i, a: 'Prices depend on material and size: Museum Poster $24–$79, Gallery Canvas $59–$159, Brushed Metal $69–$189, Framed Matte $69–$169. Tip: use code CROWN10 for 10% off! ✨' },
+  { re: /(discount|promo|code|coupon|deal)/i, a: 'Yes! Use code CROWN10 at checkout for 10% off your order. ✨' },
   { re: /(return|refund|damage|broken)/i, a: 'If your print arrives damaged or less than perfect, we\'ll reprint it free — that\'s our guarantee. Just email support with a photo and your order number.' },
   { re: /(upload|own photo|custom|my picture|my image)/i, a: 'Absolutely — scroll to the "Print Your Own" studio, drop in your photo, pick a material and size, and we\'ll print it like a gallery piece. High-resolution images look best!' },
   { re: /(material|canvas|metal|poster|framed|difference)/i, a: 'We offer four finishes: Museum Poster (archival matte paper), Gallery Canvas (1.5" wrap, ready to hang), Brushed Metal (vivid + waterproof), and Framed Matte (slim black wood frame). Canvas and Metal make the boldest statement pieces!' },
@@ -406,7 +406,7 @@ app.get('/api/variants/:productId', async (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`GildedWalls backend running on http://localhost:${PORT}`);
+  console.log(`StippleCrown backend running on http://localhost:${PORT}`);
   if (!TOKEN) console.warn('[WARN] PRINTFUL_TOKEN is not set');
   if (!stripe) console.warn('[WARN] STRIPE_SECRET_KEY is not set');
 });

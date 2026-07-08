@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: gildedwalls-backend
+    name: stipplecrown-backend
     runtime: node
     plan: free
     buildCommand: npm install
