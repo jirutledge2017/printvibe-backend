@@ -86,19 +86,41 @@ the important point is: **Printful hosts the final art, and we store its URL.**
 
 ## Materials each piece is sold in
 
-Every piece is offered in all four wall-art materials already defined in the
-backend (`VARIANT_MAP` / `PRODUCT_ID_MAP` in `server.js`):
+Eight materials are defined in `catalog.js` (`MATERIALS`). Four are **LIVE**
+(real Printful variant IDs mapped in `server.js`); four are **COMING SOON**
+(`available: false`, variant IDs are `null` placeholders — surfaced to the
+storefront but the order/shipping routes reject them until wired).
 
-| Material | Printful product | Notes |
-|----------|------------------|-------|
-| `poster` | Enhanced Matte Paper Poster (id 1) | budget, matte paper |
-| `canvas` | Canvas print (id 3) | gallery-wrapped, premium look |
-| `metal`  | Metal / aluminum print (id 588) | vivid, glossy "sheet metal" |
-| `framed` | Enhanced Matte Paper Framed Poster (id 2) | black frame |
+| Material | Printful product | Status | Notes |
+|----------|------------------|--------|-------|
+| `poster`        | Enhanced Matte Paper Poster (1)        | LIVE | budget, matte paper |
+| `canvas`        | Canvas print (3)                       | LIVE | gallery-wrapped |
+| `metal`         | Metal / aluminum print (588)           | LIVE | vivid "sheet metal" |
+| `framed`        | Matte Framed Poster, Black (2)         | LIVE | black frame |
+| `poster_luster` | Premium Luster Photo Poster (171)      | SOON | premium photo paper |
+| `acrylic`       | Acrylic Print (confirm id)             | SOON | glossy acrylic |
+| `framed_white`  | Framed Poster, White (2, white variant)| SOON | white frame |
+| `framed_wood`   | Framed Poster, Natural Wood (2, wood)  | SOON | wood frame |
 
 Sizes per material: 4x6, 5x7, 8x10, 11x14, 16x20, 24x36 (see `PRICING` in
-`catalog.js`). One good print-res source image per piece covers every material
-and size — no need to generate per-material.
+`catalog.js`). One print-res source image per piece covers every material and
+size — no need to generate per-material.
+
+### Second task: activate the 4 "coming soon" materials
+
+This needs the **Printful API** (blocked from the automated session, available
+here). For each SOON material:
+
+1. Find the product and its variants: `GET https://api.printful.com/products/:id`
+   with `Authorization: Bearer $PRINTFUL_TOKEN` (e.g. 171 for luster; for
+   `framed_white`/`framed_wood` use product 2 and pick the white/natural frame
+   variants; confirm the acrylic product id from `GET /products`).
+2. Fill the real per-size variant IDs into `VARIANT_MAP[<material>]` in
+   `server.js` (replace the `null`s), and set `PRODUCT_ID_MAP[acrylic]`.
+3. Flip that material to `available: true` in `catalog.js` `MATERIALS`.
+4. Verify: `curl /api/materials` shows it LIVE, and
+   `curl "/api/shipping?...&materialId=<material>&sizeDim=16x20"` no longer 400s
+   with "not available yet".
 
 ## When done
 

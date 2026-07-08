@@ -54,9 +54,35 @@ const VARIANT_MAP = {
     '16x20':  4399,  // $41.77
     '24x36':     4,  // $74.41
   },
+
+  // ── "Coming soon" materials ──────────────────────────────────────
+  // Surfaced to the storefront (catalog.js MATERIALS, available:false) but
+  // NOT yet orderable: variant IDs below are null placeholders. Fill them with
+  // real Printful variant IDs (GET /products/:id → variants) to go live, then
+  // flip the material to available:true in catalog.js. Until then getVariantId
+  // returns null and the order/shipping routes reject these cleanly.
+  poster_luster: {
+    // Premium Luster Photo Paper Poster - product 171
+    '4x6': null, '5x7': null, '8x10': null, '11x14': null, '16x20': null, '24x36': null,
+  },
+  acrylic: {
+    // Acrylic Print - confirm product id via Printful catalog
+    '4x6': null, '5x7': null, '8x10': null, '11x14': null, '16x20': null, '24x36': null,
+  },
+  framed_white: {
+    // Framed Poster, White frame - product 2 (white-frame variants)
+    '4x6': null, '5x7': null, '8x10': null, '11x14': null, '16x20': null, '24x36': null,
+  },
+  framed_wood: {
+    // Framed Poster, Natural/Wood frame - product 2 (wood-frame variants)
+    '4x6': null, '5x7': null, '8x10': null, '11x14': null, '16x20': null, '24x36': null,
+  },
 };
 
-const PRODUCT_ID_MAP = { poster: 1, canvas: 3, metal: 588, framed: 2 };
+const PRODUCT_ID_MAP = {
+  poster: 1, canvas: 3, metal: 588, framed: 2,
+  poster_luster: 171, acrylic: null, framed_white: 2, framed_wood: 2,
+};
 
 function normSize(dim) {
   return String(dim || '')
@@ -67,13 +93,19 @@ function normSize(dim) {
 }
 
 function getVariantId(materialId, sizeDim) {
-  const mat = (materialId || 'poster').toLowerCase()
-    .replace('flat metal', 'metal')
-    .replace('flat_metal', 'metal')
-    .replace('wood', 'framed');
+  let mat = String(materialId || 'poster').toLowerCase().trim();
+  // Legacy / alias normalization.
+  if (mat === 'flat metal' || mat === 'flat_metal') mat = 'metal';
+  if (mat === 'wood') mat = 'framed'; // legacy 'wood' → black framed poster
+
   const sz = normSize(sizeDim || '8x10');
-  const matMap = VARIANT_MAP[mat] || VARIANT_MAP.poster;
-  return matMap[sz] || matMap['8x10'];
+  const matMap = VARIANT_MAP[mat];
+  if (!matMap) return null; // unknown material
+
+  // Fall back to the 8x10 variant when the exact size isn't stocked.
+  const id = matMap[sz] != null ? matMap[sz] : matMap['8x10'];
+  // null => material/size not yet mapped (e.g. a "coming soon" material).
+  return id != null ? id : null;
 }
 
 function printfulHeaders() {
@@ -153,9 +185,15 @@ app.post('/api/create-order', async (req, res) => {
       return res.status(402).json({ error: 'Payment required before placing order.' });
     }
 
-    // Build Printful order
+    // Build Printful order — reject any item whose material/size isn't mapped
+    // to a real Printful variant (e.g. a "coming soon" material).
+    const unavailable = [];
     const orderItems = items.map((item) => {
       const variantId = getVariantId(item.materialId, item.sizeDim);
+      if (variantId == null) {
+        unavailable.push(`${item.materialId || 'poster'} ${item.sizeDim || '8x10'}`);
+        return null;
+      }
       const entry = {
         variant_id: variantId,
         quantity: 1,
@@ -165,6 +203,13 @@ app.post('/api/create-order', async (req, res) => {
       if (item.price) entry.retail_price = Number(item.price).toFixed(2);
       return entry;
     });
+
+    if (unavailable.length) {
+      return res.status(400).json({
+        error: 'Some items are not available yet',
+        unavailable,
+      });
+    }
 
     const orderPayload = {
       recipient: {
@@ -222,6 +267,9 @@ app.get('/api/shipping', async (req, res) => {
     }
 
     const variantId = getVariantId(materialId, sizeDim);
+    if (variantId == null) {
+      return res.status(400).json({ error: `Material not available yet: ${materialId} ${sizeDim}` });
+    }
     const pfRes = await fetch(`${PRINTFUL_API}/shipping/rates`, {
       method: 'POST',
       headers: printfulHeaders(),
@@ -238,6 +286,12 @@ app.get('/api/shipping', async (req, res) => {
     console.error('[server] shipping exception:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// ── GET /api/materials ────────────────────────────────────────────
+// Material options with prices + availability ("coming soon" = available:false).
+app.get('/api/materials', (_req, res) => {
+  res.json({ materials: catalog.materialOptions() });
 });
 
 // ── GET /api/products ─────────────────────────────────────────────

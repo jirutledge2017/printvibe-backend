@@ -6,19 +6,47 @@
 // NOTE: imageUrl values are placeholders. Swap them for real artwork URLs
 // (or a CDN/Printful file URL) as the designs are produced.
 
+// Material options. `available: true` = orderable now (real Printful variant
+// IDs are mapped in server.js). `available: false` = surfaced to the storefront
+// as "coming soon" until its Printful variant IDs are filled in (see
+// GENERATE_ARTWORK.md — those IDs must be pulled from the Printful API).
+const MATERIALS = [
+  { id: 'poster',        label: 'Matte Paper Poster',           available: true  },
+  { id: 'poster_luster', label: 'Premium Luster Photo Poster',  available: false },
+  { id: 'canvas',        label: 'Gallery Canvas',               available: true  },
+  { id: 'metal',         label: 'Metal Print',                  available: true  },
+  { id: 'acrylic',       label: 'Acrylic Print',                available: false },
+  { id: 'framed',        label: 'Framed Poster — Black',        available: true  },
+  { id: 'framed_white',  label: 'Framed Poster — White',        available: false },
+  { id: 'framed_wood',   label: 'Framed Poster — Natural Wood',  available: false },
+];
+
 // Suggested retail price (USD) by material + size. Storefront can override.
 const PRICING = {
-  poster: { '4x6':  9, '5x7': 11, '8x10': 16, '11x14': 24, '16x20': 34, '24x36': 59 },
-  canvas: { '4x6': 19, '5x7': 22, '8x10': 32, '11x14': 49, '16x20': 69, '24x36': 119 },
-  metal:  { '4x6': 24, '5x7': 27, '8x10': 39, '11x14': 59, '16x20': 84, '24x36': 149 },
-  framed: { '4x6': 29, '5x7': 32, '8x10': 44, '11x14': 64, '16x20': 89, '24x36': 154 },
+  poster:        { '4x6':  9, '5x7': 11, '8x10': 16, '11x14': 24, '16x20': 34, '24x36':  59 },
+  poster_luster: { '4x6': 12, '5x7': 14, '8x10': 19, '11x14': 28, '16x20': 39, '24x36':  66 },
+  canvas:        { '4x6': 19, '5x7': 22, '8x10': 32, '11x14': 49, '16x20': 69, '24x36': 119 },
+  metal:         { '4x6': 24, '5x7': 27, '8x10': 39, '11x14': 59, '16x20': 84, '24x36': 149 },
+  acrylic:       { '4x6': 34, '5x7': 39, '8x10': 54, '11x14': 79, '16x20': 109, '24x36': 189 },
+  framed:        { '4x6': 29, '5x7': 32, '8x10': 44, '11x14': 64, '16x20': 89, '24x36': 154 },
+  framed_white:  { '4x6': 29, '5x7': 32, '8x10': 44, '11x14': 64, '16x20': 89, '24x36': 154 },
+  framed_wood:   { '4x6': 34, '5x7': 37, '8x10': 49, '11x14': 69, '16x20': 94, '24x36': 164 },
 };
 
-const ALL_MATERIALS = ['poster', 'canvas', 'metal', 'framed'];
 const ALL_SIZES = ['4x6', '5x7', '8x10', '11x14', '16x20', '24x36'];
 
-// Helper: build a size→price map for a material.
-function priceMatrix(materials = ALL_MATERIALS) {
+// Ids of materials orderable right now.
+function availableMaterialIds() {
+  return MATERIALS.filter((m) => m.available).map((m) => m.id);
+}
+
+// Full material list with per-size prices + availability (for the storefront).
+function materialOptions() {
+  return MATERIALS.map((m) => ({ ...m, prices: { ...PRICING[m.id] } }));
+}
+
+// Helper: build a size→price map for the given materials (defaults to all).
+function priceMatrix(materials = MATERIALS.map((m) => m.id)) {
   const out = {};
   for (const mat of materials) out[mat] = { ...PRICING[mat] };
   return out;
@@ -79,7 +107,10 @@ function expandItem(collectionId, item) {
     title: item.title,
     tags: item.tags,
     imageUrl: art(item.id),
-    materials: ALL_MATERIALS,
+    // Orderable-now material ids (backward compatible string array).
+    materials: availableMaterialIds(),
+    // Full option list incl. "coming soon" materials, with labels + prices.
+    materialOptions: materialOptions(),
     sizes: ALL_SIZES,
     prices: priceMatrix(),
   };
@@ -115,4 +146,7 @@ function getProduct(id) {
   return null;
 }
 
-module.exports = { getCollections, getCollection, getProduct, PRICING };
+module.exports = {
+  getCollections, getCollection, getProduct,
+  PRICING, MATERIALS, materialOptions, availableMaterialIds,
+};
