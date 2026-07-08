@@ -16,6 +16,7 @@ const ARTWORKS = [
     badge: 'Best Seller',
     accent: '#e8b64c',
     desc: 'A jet-black panther crowned in molten gold. Ink and gilding collide in a piece that owns any room it enters.',
+    story: 'They say the panther hunts alone because nothing else can keep its pace. Here it wears its solitude like a crown — struck through with veins of gold, the mark of a thing that was never given anything and took the throne anyway. Hang it where you make your hardest decisions. It watches with you.',
   },
   {
     id: 'chromatic-king',
@@ -24,6 +25,7 @@ const ARTWORKS = [
     badge: 'New',
     accent: '#ff3d5a',
     desc: 'The king of the savanna erupting in crimson, teal, and amber. Pure energy for walls that refuse to be quiet.',
+    story: 'A lion doesn\'t roar to be heard — it roars to remind the savanna who it belongs to. We shattered that roar into color: crimson for the fight, teal for the calm after it, amber for the crown. This is the king caught mid-declaration, every hue a word in a language older than fear.',
   },
   {
     id: 'i-am-king',
@@ -32,6 +34,7 @@ const ARTWORKS = [
     badge: 'Statement Piece',
     accent: '#e8b64c',
     desc: 'Crowned in gold and armored in affirmation — Strong. Leader. Champion. A towering statement of power and self-belief.',
+    story: 'Before anyone believes in you, you have to say it out loud. Strong. Leader. Champion. The words are tattooed in gold across a body carved from will alone, because a crown isn\'t handed down here — it\'s spoken into being. Put this on your wall as a daily reminder: you already are what you\'re working to become.',
   },
   {
     id: 'emerald-gaze',
@@ -40,6 +43,7 @@ const ARTWORKS = [
     badge: null,
     accent: '#2dd4bf',
     desc: 'A midnight jaguar with eyes of burning teal, emerging from a storm of ink. Quiet menace, framed in shadow.',
+    story: 'In the black of the rainforest, you never see the jaguar — you feel it, a half-second before it decides your fate. We froze that moment: the storm of ink, the body still half-shadow, and two eyes of burning teal that have already made up their mind. Power doesn\'t need to announce itself. It just needs to be seen.',
   },
   {
     id: 'crowned-grace',
@@ -48,6 +52,7 @@ const ARTWORKS = [
     badge: 'Limited Feel',
     accent: '#8b5cf6',
     desc: 'Serenity in gold and jade — a dreamlike portrait wreathed in roses and wings. Softness with unmistakable presence.',
+    story: 'The crane crowns her not with jewels but with wings, and she wears it eyes-closed, unbothered, complete. Roses bloom where a lesser story would put armor. This is the quiet kind of royalty — the woman who has nothing left to prove, wrapped in gold and jade and her own unhurried peace. Grace, it turns out, is the loudest power in the room.',
   },
   {
     id: 'boss-moves-only',
@@ -56,6 +61,7 @@ const ARTWORKS = [
     badge: 'New',
     accent: '#e8b64c',
     desc: 'A bull in a tailored suit with horns of solid gold, the city skyline burning below. For offices and rooms where deals get done.',
+    story: 'The market has two animals, and only one of them wears a suit. Horns cast in solid gold, the skyline glittering at his back like territory already claimed — this bull charges forward, never away. Hang it above the desk where the real work happens. It doesn\'t ask permission, and neither should you.',
   },
   {
     id: 'legacy',
@@ -64,6 +70,7 @@ const ARTWORKS = [
     badge: 'Fan Favorite',
     accent: '#e8b64c',
     desc: 'Father and son, crowned in gold, standing in a halo of light. A tribute to the kings we raise and the ones who raised us.',
+    story: 'A crown was never meant to be worn alone — it\'s meant to be passed down. Two silhouettes, one grown and one still growing, stand in the same golden light, wearing the same gold, carrying the same name forward. This is the piece for the fathers who build so their sons can inherit, and the sons who\'ll do the same. A kingdom is only as lasting as the hands you hand it to.',
   },
   {
     id: 'rise-above',
@@ -72,6 +79,7 @@ const ARTWORKS = [
     badge: 'New',
     accent: '#2dd4bf',
     desc: 'An eagle breaking through storm clouds in a burst of gold and light. For everyone who refuses to stay down.',
+    story: 'Every other bird flees the storm. The eagle flies straight into it, spreads its wings, and lets the wind carry it higher than calm air ever could. Here it breaks the clouds in a burst of gold and light — proof that the thing trying to break you is the same thing lifting you up. Rise above. It was always the only way through.',
   },
   {
     id: 'golden-serpent',
@@ -80,6 +88,7 @@ const ARTWORKS = [
     badge: null,
     accent: '#e8b64c',
     desc: 'A jet-black serpent laced with hand-set gold leaf, coiled across pure darkness. Minimal, hypnotic, unforgettable.',
+    story: 'The serpent has meant the same thing in every culture that ever drew it: rebirth. Shed the old skin, emerge remade, gilded by the process. Against pure black, this one coils in hand-set gold leaf — patient, hypnotic, in no hurry at all. A piece for anyone who has burned down an old version of themselves and come back worth more.',
   },
   {
     id: 'gilded-peace',
@@ -88,6 +97,7 @@ const ARTWORKS = [
     badge: null,
     accent: '#ff8fab',
     desc: 'A peace sign poured in liquid gold over teal and blush marble. Soft power for bedrooms, studios, and calm corners.',
+    story: 'Peace isn\'t the absence of a storm — it\'s the gold seam that holds you together after one. Poured in liquid gold across teal and blush marble, this is peace as the Japanese see it in kintsugi: the crack made precious, the healing made visible. Hang it in the corner where you exhale. Softness, it turns out, is its own kind of strength.',
   },
 ];
 
@@ -270,6 +280,8 @@ function openProduct(id) {
   $('#pmTitle').textContent = art.title;
   $('#pmCat').textContent = `${art.cat} · Signature Collection`;
   $('#pmDesc').textContent = art.desc;
+  const storyEl = $('#pmStory');
+  if (storyEl) { storyEl.textContent = art.story || ''; storyEl.hidden = !art.story; }
 
   $('#pmMaterials').innerHTML = Object.entries(PRICING).map(([key, m]) =>
     `<button class="chip ${key === pmState.material ? 'is-active' : ''}" data-material="${key}">${m.label}</button>`

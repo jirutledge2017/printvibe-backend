@@ -433,7 +433,22 @@ section { position: relative; z-index: 2; }
 .pm__body { padding: 44px 38px; }
 .pm__cat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--gold); font-weight: 700; }
 .pm__body h3 { font-size: 2rem; margin: 8px 0 12px; }
-.pm__desc { color: var(--ink-dim); font-size: 0.95rem; margin-bottom: 26px; }
+.pm__desc { color: var(--ink-dim); font-size: 0.95rem; margin-bottom: 18px; }
+.pm__story {
+  position: relative;
+  font-family: var(--font-display); font-style: italic;
+  font-size: 1rem; line-height: 1.65; color: var(--ink);
+  padding: 16px 20px; margin-bottom: 26px;
+  border-left: 2px solid var(--gold);
+  background: linear-gradient(90deg, rgba(232,182,76,0.08), transparent 90%);
+  border-radius: 0 10px 10px 0;
+}
+.pm__story::before {
+  content: "The Story"; display: block;
+  font-family: var(--font-body); font-style: normal;
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 8px;
+}
 .panel__group { margin-bottom: 20px; }
 .panel__group > label {
   display: block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em;
