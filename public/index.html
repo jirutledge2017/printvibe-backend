@@ -21,6 +21,9 @@
 
   <!-- NAV -->
   <header class="nav" id="navBar">
+    <div class="announce">
+      <span>✨ Grand Opening — use code <strong>GILDED10</strong> for 10% off · Free reprint guarantee on every order ✨</span>
+    </div>
     <div class="nav__inner">
       <a href="#top" class="logo">
         <span class="logo__mark">G</span>
@@ -28,6 +31,7 @@
       </a>
       <nav class="nav__links">
         <a href="#collection">Collection</a>
+        <a href="#custom">Print Your Own</a>
         <a href="#materials">Materials</a>
         <a href="#how">How It Works</a>
         <a href="#about">About</a>
@@ -97,9 +101,49 @@
       <button class="chip is-active" data-cat="all">All Pieces</button>
       <button class="chip" data-cat="wildlife">Wildlife</button>
       <button class="chip" data-cat="royalty">Royalty</button>
+      <button class="chip" data-cat="motivation">Motivation</button>
       <button class="chip" data-cat="portrait">Portrait</button>
+      <button class="chip" data-cat="abstract">Abstract</button>
     </div>
     <div class="collection__grid" id="grid"></div>
+  </section>
+
+  <!-- PRINT YOUR OWN -->
+  <section class="custom" id="custom">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow"><span class="eyebrow__line"></span>Print Your Own</p>
+      <h2>Your photo, <span class="grad">gallery treatment.</span></h2>
+      <p class="sub">Wedding portraits, travel shots, your own art — upload any photo and we'll print it on museum-grade material, gilded-frame quality, shipped to your door.</p>
+    </div>
+    <div class="cu" data-reveal data-reveal-delay="120">
+      <div class="cu__stage">
+        <div class="cu__drop" id="cuDrop">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4m0 0l-4 4m4-4l4 4"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+          <p><strong>Drop your photo here</strong></p>
+          <p class="muted">or click to browse · JPG, PNG, WebP up to 30MB</p>
+          <input type="file" id="cuFile" accept="image/jpeg,image/png,image/webp" hidden />
+        </div>
+        <figure class="cu__preview tilt" id="cuPreview" data-tilt hidden>
+          <img id="cuImg" src="" alt="Your photo preview" />
+          <button class="btn btn--ghost cu__change" id="cuChange" type="button">Change photo</button>
+        </figure>
+      </div>
+      <aside class="cu__panel">
+        <div class="panel__group">
+          <label>Material</label>
+          <div class="chips" id="cuMaterials"></div>
+        </div>
+        <div class="panel__group">
+          <label>Size</label>
+          <div class="chips" id="cuSizes"></div>
+        </div>
+        <div class="pm__price-row">
+          <div><span class="muted">Total</span><strong id="cuPrice">$0</strong></div>
+          <button class="btn btn--gold btn--lg" id="cuAdd" disabled>Add to Cart</button>
+        </div>
+        <p class="panel__note">For the sharpest large prints, use photos at least 2000px wide. Printed &amp; fulfilled by Printful.</p>
+      </aside>
+    </div>
   </section>
 
   <!-- MATERIALS -->
@@ -170,6 +214,31 @@
     </div>
   </section>
 
+  <!-- TESTIMONIALS -->
+  <section class="reviews">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow"><span class="eyebrow__line"></span>Wall Love</p>
+      <h2>What collectors <span class="grad">are saying.</span></h2>
+    </div>
+    <div class="reviews__grid">
+      <figure class="review" data-reveal>
+        <div class="review__stars">★★★★★</div>
+        <blockquote>"The Gilded Panther on metal stops every guest in their tracks. The gold detail is unreal in person."</blockquote>
+        <figcaption>— Marcus T. · Atlanta, GA</figcaption>
+      </figure>
+      <figure class="review" data-reveal data-reveal-delay="120">
+        <div class="review__stars">★★★★★</div>
+        <blockquote>"Ordered Legacy framed for my husband and son. We both teared up when we hung it. Quality is gallery-level."</blockquote>
+        <figcaption>— Danielle R. · Houston, TX</figcaption>
+      </figure>
+      <figure class="review" data-reveal data-reveal-delay="240">
+        <div class="review__stars">★★★★★</div>
+        <blockquote>"Uploaded my own travel photo on canvas — it came out better than prints I've paid triple for."</blockquote>
+        <figcaption>— Kevin O. · Chicago, IL</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="cta">
     <div class="cta__inner" data-reveal>
@@ -204,6 +273,16 @@
           <a href="#about">Returns</a>
         </div>
       </div>
+    </div>
+    <div class="foot__news">
+      <div>
+        <h4>Join the Gilded List</h4>
+        <p class="muted">New drops, exclusive pieces, and subscriber-only discounts. No spam, ever.</p>
+      </div>
+      <form id="newsForm" class="foot__newsform">
+        <input type="email" id="newsEmail" placeholder="your@email.com" required />
+        <button class="btn btn--gold" type="submit">Subscribe</button>
+      </form>
     </div>
     <div class="foot__bottom">
       <span>© <span id="year"></span> GildedWalls.com — All rights reserved.</span>
@@ -247,6 +326,12 @@
     </div>
     <div class="drawer__body" id="cartBody"><p class="muted">Your cart is empty.</p></div>
     <div class="drawer__foot">
+      <div class="drawer__promo">
+        <input id="promoInput" placeholder="Promo code" autocomplete="off" />
+        <button class="btn btn--ghost" id="promoApply" type="button">Apply</button>
+      </div>
+      <p class="drawer__promo-msg" id="promoMsg" hidden></p>
+      <div class="drawer__total drawer__total--sub" id="discountRow" hidden><span>Discount (GILDED10)</span><strong id="cartDiscount">-$0.00</strong></div>
       <div class="drawer__total"><span>Subtotal</span><strong id="cartTotal">$0.00</strong></div>
       <button class="btn btn--gold btn--lg" id="checkoutBtn">Checkout</button>
       <p class="muted small">Shipping calculated at checkout.</p>
@@ -317,6 +402,36 @@
 
   <div class="scrim" id="scrim"></div>
   <div class="toast" id="toast"></div>
+
+  <!-- GILDED CONCIERGE (AI helper) -->
+  <div class="chat" id="chat">
+    <button class="chat__fab" id="chatFab" aria-label="Chat with the Gilded Concierge">
+      <span class="chat__fab-icon">✦</span>
+      <span class="chat__fab-label">Ask the Concierge</span>
+    </button>
+    <div class="chat__panel" id="chatPanel" aria-hidden="true">
+      <div class="chat__head">
+        <div>
+          <strong>Gilded Concierge</strong>
+          <span>Your art advisor · usually replies instantly</span>
+        </div>
+        <button class="iconbtn" id="chatClose" aria-label="Close chat">✕</button>
+      </div>
+      <div class="chat__body" id="chatBody">
+        <div class="chat__msg chat__msg--bot">Welcome to GildedWalls ✨ I can help you pick the perfect piece, compare materials, or answer anything about sizes, shipping, and custom photo prints. What are you looking for?</div>
+        <div class="chat__quick" id="chatQuick">
+          <button data-q="Which piece do you recommend for a living room?">Recommend a piece</button>
+          <button data-q="What's the difference between the materials?">Compare materials</button>
+          <button data-q="How long does shipping take?">Shipping time</button>
+          <button data-q="Can I print my own photo?">Print my photo</button>
+        </div>
+      </div>
+      <form class="chat__input" id="chatForm">
+        <input id="chatText" placeholder="Ask me anything…" autocomplete="off" maxlength="500" />
+        <button class="btn btn--gold" type="submit" id="chatSend">Send</button>
+      </form>
+    </div>
+  </div>
 
   <script src="https://js.stripe.com/v3/"></script>
   <script src="js/app.js"></script>

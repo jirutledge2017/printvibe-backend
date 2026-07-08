@@ -49,6 +49,46 @@ const ARTWORKS = [
     accent: '#8b5cf6',
     desc: 'Serenity in gold and jade — a dreamlike portrait wreathed in roses and wings. Softness with unmistakable presence.',
   },
+  {
+    id: 'boss-moves-only',
+    title: 'Boss Moves Only',
+    cat: 'motivation',
+    badge: 'New',
+    accent: '#e8b64c',
+    desc: 'A bull in a tailored suit with horns of solid gold, the city skyline burning below. For offices and rooms where deals get done.',
+  },
+  {
+    id: 'legacy',
+    title: 'Legacy',
+    cat: 'royalty',
+    badge: 'Fan Favorite',
+    accent: '#e8b64c',
+    desc: 'Father and son, crowned in gold, standing in a halo of light. A tribute to the kings we raise and the ones who raised us.',
+  },
+  {
+    id: 'rise-above',
+    title: 'Rise Above',
+    cat: 'motivation',
+    badge: 'New',
+    accent: '#2dd4bf',
+    desc: 'An eagle breaking through storm clouds in a burst of gold and light. For everyone who refuses to stay down.',
+  },
+  {
+    id: 'golden-serpent',
+    title: 'Golden Serpent',
+    cat: 'wildlife',
+    badge: null,
+    accent: '#e8b64c',
+    desc: 'A jet-black serpent laced with hand-set gold leaf, coiled across pure darkness. Minimal, hypnotic, unforgettable.',
+  },
+  {
+    id: 'gilded-peace',
+    title: 'Gilded Peace',
+    cat: 'abstract',
+    badge: null,
+    accent: '#ff8fab',
+    desc: 'A peace sign poured in liquid gold over teal and blush marble. Soft power for bedrooms, studios, and calm corners.',
+  },
 ];
 
 // Prices per material/size (retail USD). Sizes match the backend's Printful variant map.
@@ -309,17 +349,33 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ---------- cart ----------
+const PROMO_CODES = { GILDED10: 0.10 };
+
 const Cart = (() => {
   const KEY = 'gildedwalls.cart';
+  const PROMO_KEY = 'gildedwalls.promo';
   let items = [];
+  let promo = null;
   try { items = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch {}
+  const savedPromo = localStorage.getItem(PROMO_KEY);
+  if (savedPromo && PROMO_CODES[savedPromo]) promo = savedPromo;
 
   const save = () => { localStorage.setItem(KEY, JSON.stringify(items)); render(); };
   const subtotal = () => items.reduce((s, i) => s + i.price, 0);
+  const discount = () => (promo ? Math.round(subtotal() * PROMO_CODES[promo] * 100) / 100 : 0);
 
   function add(item) { items.push(item); save(); }
   function remove(id) { items = items.filter((i) => i.id !== id); save(); }
   function clear() { items = []; save(); }
+
+  function applyPromo(code) {
+    const c = String(code || '').trim().toUpperCase();
+    if (!PROMO_CODES[c]) return false;
+    promo = c;
+    localStorage.setItem(PROMO_KEY, c);
+    render();
+    return true;
+  }
 
   function render() {
     const body = $('#cartBody');
@@ -340,7 +396,10 @@ const Cart = (() => {
       $$('.cart-item__rm', body).forEach((b) =>
         b.addEventListener('click', () => remove(b.dataset.id)));
     }
-    $('#cartTotal').textContent = money(subtotal());
+    const d = discount();
+    $('#discountRow').hidden = d <= 0;
+    $('#cartDiscount').textContent = `-${money(d)}`;
+    $('#cartTotal').textContent = money(subtotal() - d);
     $('#cartCount').textContent = items.length;
   }
 
@@ -352,8 +411,26 @@ const Cart = (() => {
   $('#scrim').addEventListener('click', close);
   render();
 
-  return { add, remove, clear, open, close, get items() { return items; }, subtotal };
+  return {
+    add, remove, clear, open, close, applyPromo,
+    get items() { return items; },
+    get promo() { return promo; },
+    subtotal, discount,
+  };
 })();
+
+// promo code UI
+$('#promoApply').addEventListener('click', () => {
+  const msg = $('#promoMsg');
+  msg.hidden = false;
+  if (Cart.applyPromo($('#promoInput').value)) {
+    msg.textContent = '✓ 10% off applied!';
+    msg.classList.remove('is-error');
+  } else {
+    msg.textContent = 'That code isn\'t valid.';
+    msg.classList.add('is-error');
+  }
+});
 
 // ---------- checkout ----------
 const Checkout = (() => {
@@ -434,10 +511,12 @@ const Checkout = (() => {
 
   function renderSummary() {
     const sub = Cart.subtotal();
+    const disc = Cart.discount();
     $('#coSummary').innerHTML = `
       ${Cart.items.map((i) => `<div class="row"><span>${i.name}</span><span>${money(i.price)}</span></div>`).join('')}
+      ${disc ? `<div class="row"><span>Discount (${Cart.promo})</span><span>-${money(disc)}</span></div>` : ''}
       <div class="row"><span>Shipping</span><span>${shippingCost ? money(shippingCost) : 'FREE'}</span></div>
-      <div class="row total"><span>Total</span><strong>${money(sub + shippingCost)}</strong></div>
+      <div class="row total"><span>Total</span><strong>${money(sub - disc + shippingCost)}</strong></div>
     `;
   }
 
@@ -474,8 +553,10 @@ const Checkout = (() => {
 
     try {
       const cfg = await loadConfig();
+      const disc = Cart.discount();
       const itemsForPayment = [
         ...Cart.items.map((i) => ({ name: i.name, price: i.price })),
+        ...(disc ? [{ name: `Discount (${Cart.promo})`, price: -disc }] : []),
         ...(shippingCost ? [{ name: 'Shipping', price: shippingCost }] : []),
       ];
 
@@ -538,6 +619,208 @@ const Checkout = (() => {
 
   return { open };
 })();
+
+// ---------- print your own studio ----------
+const CustomStudio = (() => {
+  const drop = $('#cuDrop');
+  const input = $('#cuFile');
+  const preview = $('#cuPreview');
+  const img = $('#cuImg');
+  const addBtn = $('#cuAdd');
+  let state = { material: 'canvas', size: '16x20', file: null, dataUrl: null };
+
+  function renderChips() {
+    $('#cuMaterials').innerHTML = Object.entries(PRICING).map(([key, m]) =>
+      `<button class="chip ${key === state.material ? 'is-active' : ''}" data-material="${key}">${m.label}</button>`
+    ).join('');
+    $('#cuSizes').innerHTML = Object.keys(PRICING[state.material].sizes).map((s) =>
+      `<button class="chip ${s === state.size ? 'is-active' : ''}" data-size="${s}">${SIZE_LABELS[s]}</button>`
+    ).join('');
+    $('#cuPrice').textContent = money(PRICING[state.material].sizes[state.size]);
+  }
+  renderChips();
+
+  $('#cuMaterials').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    state.material = chip.dataset.material;
+    renderChips();
+  });
+  $('#cuSizes').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    state.size = chip.dataset.size;
+    renderChips();
+  });
+
+  function loadFile(file) {
+    if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type)) {
+      toast('Please use a JPG, PNG, or WebP image');
+      return;
+    }
+    if (file.size > 30 * 1024 * 1024) {
+      toast('That image is over 30MB — try a smaller one');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      state.file = file;
+      state.dataUrl = reader.result;
+      img.src = state.dataUrl;
+      drop.hidden = true;
+      preview.hidden = false;
+      addBtn.disabled = false;
+      toast('Photo loaded — pick a material and size ✨');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  drop.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => loadFile(input.files && input.files[0]));
+  ['dragenter', 'dragover'].forEach((ev) =>
+    drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('is-drag'); }));
+  ['dragleave', 'drop'].forEach((ev) =>
+    drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('is-drag'); }));
+  drop.addEventListener('drop', (e) => loadFile(e.dataTransfer.files && e.dataTransfer.files[0]));
+
+  $('#cuChange').addEventListener('click', () => {
+    preview.hidden = true;
+    drop.hidden = false;
+    addBtn.disabled = true;
+    state.file = null; state.dataUrl = null;
+    input.value = '';
+  });
+
+  function makeThumb() {
+    // small jpeg thumb for the cart drawer
+    return new Promise((resolve) => {
+      const image = new Image();
+      image.onload = () => {
+        const c = document.createElement('canvas');
+        const scale = 220 / image.width;
+        c.width = 220; c.height = Math.round(image.height * scale);
+        c.getContext('2d').drawImage(image, 0, 0, c.width, c.height);
+        resolve(c.toDataURL('image/jpeg', 0.7));
+      };
+      image.src = state.dataUrl;
+    });
+  }
+
+  addBtn.addEventListener('click', async () => {
+    if (!state.file) return;
+    addBtn.disabled = true;
+    const original = addBtn.textContent;
+    addBtn.textContent = 'Uploading…';
+    try {
+      // upload full-res image so Printful can fetch it for printing
+      const base64 = state.dataUrl.split(',')[1];
+      const res = await fetch(`${API}/api/upload`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: base64, contentType: state.file.type }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+      Cart.add({
+        id: `custom-${Date.now()}`,
+        artId: 'custom',
+        name: `Your Photo — ${PRICING[state.material].label} ${SIZE_LABELS[state.size]}`,
+        title: 'Your Custom Print',
+        materialId: state.material,
+        sizeDim: state.size,
+        price: PRICING[state.material].sizes[state.size],
+        imageUrl: `${location.origin}${data.url}`,
+        thumb: await makeThumb(),
+      });
+      toast('Your custom print is in the cart ✨');
+      Cart.open();
+    } catch (err) {
+      toast(`Upload failed: ${err.message}`);
+    } finally {
+      addBtn.disabled = false;
+      addBtn.textContent = original;
+    }
+  });
+})();
+
+// ---------- Gilded Concierge chat ----------
+const Concierge = (() => {
+  const root = $('#chat');
+  const body = $('#chatBody');
+  const input = $('#chatText');
+  const history = [];
+  let busy = false;
+
+  const open = () => { root.classList.add('is-open'); input.focus(); };
+  const close = () => root.classList.remove('is-open');
+  $('#chatFab').addEventListener('click', open);
+  $('#chatClose').addEventListener('click', close);
+
+  function addMsg(role, text, cls = '') {
+    const el = document.createElement('div');
+    el.className = `chat__msg chat__msg--${role === 'user' ? 'user' : 'bot'} ${cls}`;
+    el.textContent = text;
+    body.appendChild(el);
+    body.scrollTop = body.scrollHeight;
+    return el;
+  }
+
+  async function send(text) {
+    const q = String(text || '').trim();
+    if (!q || busy) return;
+    busy = true;
+    $('#chatQuick')?.remove();
+    addMsg('user', q);
+    history.push({ role: 'user', content: q });
+    input.value = '';
+    const typing = addMsg('bot', 'Thinking…', 'chat__msg--typing');
+
+    try {
+      const res = await fetch(`${API}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+      typing.remove();
+      addMsg('bot', data.reply);
+      history.push({ role: 'assistant', content: data.reply });
+    } catch (err) {
+      typing.remove();
+      addMsg('bot', `Sorry — ${err.message}`);
+    } finally {
+      busy = false;
+    }
+  }
+
+  $('#chatForm').addEventListener('submit', (e) => { e.preventDefault(); send(input.value); });
+  $('#chatQuick').addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (b) send(b.dataset.q);
+  });
+
+  return { open, close };
+})();
+
+// ---------- newsletter ----------
+$('#newsForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('#newsEmail').value.trim();
+  try {
+    const res = await fetch(`${API}/api/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (!res.ok) throw new Error();
+    $('#newsEmail').value = '';
+    toast('Welcome to the Gilded List ✨');
+  } catch {
+    toast('Could not subscribe — try again?');
+  }
+});
 
 // ---------- toast ----------
 let toastTimer;
