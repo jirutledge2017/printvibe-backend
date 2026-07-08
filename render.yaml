@@ -2,15 +2,14 @@ services:
   - type: web
     name: gildedwalls-backend
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: npm install
     startCommand: node server.js
     healthCheckPath: /health
     autoDeploy: true
-    disk:
-      name: gildedwalls-uploads
-      mountPath: /opt/render/project/src/public/uploads
-      sizeGB: 1
+    # No persistent disk on the free plan — customer photo uploads to
+    # public/uploads won't survive a restart/redeploy until you upgrade
+    # to a paid plan and add a disk back. Everything else works fine.
     envVars:
       - key: PRINTFUL_TOKEN
         sync: false
