@@ -27,15 +27,30 @@ then commit and push to the branch.
 - **Commercial-use / print-on-demand** — Firefly is commercially safe, which is
   why it's the chosen tool for resale.
 - **Clean art only** — no text, watermarks, or borders.
-- After each generation, **host the image at a stable public URL** that Printful
-  can fetch, and put that URL in `catalog.js` as the item's `imageUrl`.
+- **Host via Printful** (see below), then put the Printful-hosted URL in
+  `catalog.js` as the item's `imageUrl`.
 - Keep the item **ids and titles exactly as they are** — only swap `imageUrl`.
 
-## Hosting note
+## Hosting = Printful file library (preferred)
 
-Firefly produces the image, but Printful needs a **stable public** link. Options:
-push to Adobe/Creative Cloud assets, an S3/CDN bucket, or Shopify's CDN (the
-Shopify connector is available in-session). Confirm the host before wiring URLs.
+Firefly produces the image, but Printful needs a **stable public** link, and we
+want everything living in Printful so it's one system. So don't use a separate
+host — upload each generated image into the Printful file library and reuse the
+URL Printful gives back.
+
+Flow per image (uses the same `PRINTFUL_TOKEN` this backend already uses):
+
+1. Generate the image with Firefly → you get a (possibly temporary) source URL.
+2. `POST https://api.printful.com/files` with `{ "url": "<firefly source url>" }`
+   and the `Authorization: Bearer $PRINTFUL_TOKEN` header. Printful downloads and
+   stores its own permanent copy.
+3. From the response `result`, capture the file **`id`** and **`preview_url`**.
+4. In `catalog.js`, set the item's `imageUrl` to that `preview_url`. (Optionally
+   also record the Printful file `id` — orders can reference `{ id }` directly
+   instead of a URL, which is more robust than passing a URL each time.)
+
+Confirm the exact Files API fields against current Printful docs before wiring;
+the important point is: **Printful hosts the final art, and we store its URL.**
 
 ## The 18 pieces
 
@@ -69,9 +84,25 @@ Shopify connector is available in-session). Confirm the host before wiring URLs.
 | `warrior-05` | Knight Templar | medieval knight in plate armor with sword and cross shield, castle backdrop, heroic light |
 | `warrior-06` | Night Operator | tactical night-ops soldier with NVGs, green low-light glow, stealth atmosphere |
 
+## Materials each piece is sold in
+
+Every piece is offered in all four wall-art materials already defined in the
+backend (`VARIANT_MAP` / `PRODUCT_ID_MAP` in `server.js`):
+
+| Material | Printful product | Notes |
+|----------|------------------|-------|
+| `poster` | Enhanced Matte Paper Poster (id 1) | budget, matte paper |
+| `canvas` | Canvas print (id 3) | gallery-wrapped, premium look |
+| `metal`  | Metal / aluminum print (id 588) | vivid, glossy "sheet metal" |
+| `framed` | Enhanced Matte Paper Framed Poster (id 2) | black frame |
+
+Sizes per material: 4x6, 5x7, 8x10, 11x14, 16x20, 24x36 (see `PRICING` in
+`catalog.js`). One good print-res source image per piece covers every material
+and size — no need to generate per-material.
+
 ## When done
 
-1. Replace all 18 `imageUrl` values in `catalog.js`.
+1. Replace all 18 `imageUrl` values in `catalog.js` with the Printful-hosted URLs.
 2. Run the server locally (`npm start`) and `curl` the endpoints to confirm they
    return the new URLs.
 3. Commit and push to `claude/capcut-anime-animal-warrior-ixomkm`.
