@@ -21,6 +21,9 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+/* The [hidden] attribute must always win over component display rules
+   (e.g. .drawer__total { display:flex }) so JS-toggled rows truly hide. */
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);

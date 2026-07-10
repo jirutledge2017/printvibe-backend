@@ -477,7 +477,6 @@ const Checkout = (() => {
   $('#coShipping').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = $('#toPayment');
-    btn.disabled = true; btn.textContent = 'Calculating shipping…';
 
     customer = {
       name: $('#fName').value.trim(),
@@ -490,6 +489,17 @@ const Checkout = (() => {
         country: $('#fCountry').value,
       },
     };
+
+    // Printful rejects US/Canada orders without a state — catch it here
+    // with a friendly message instead of a failed order at the last step.
+    if (['US', 'CA'].includes(customer.address.country) && !customer.address.state) {
+      const stateInput = $('#fState');
+      stateInput.focus();
+      toast('Please add your state (2-letter code, e.g. CA) to continue');
+      return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Calculating shipping…';
 
     // live shipping quote from Printful (via backend) for the first item
     shippingCost = 0;
