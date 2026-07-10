@@ -544,26 +544,34 @@ const Checkout = (() => {
 
   async function preparePayment() {
     const cfg = await loadConfig();
-    const hasStripe = !!cfg.stripePublishableKey && typeof window.Stripe === 'function';
+    // Only ever hand Stripe.js a publishable (pk_) key — it throws on anything else,
+    // which would strand the checkout on the shipping step.
+    const key = String(cfg.stripePublishableKey || '');
+    let hasStripe = key.startsWith('pk_') && typeof window.Stripe === 'function';
+    if (hasStripe && !stripe) {
+      try {
+        stripe = window.Stripe(key);
+        const elements = stripe.elements();
+        cardElement = elements.create('card', {
+          style: {
+            base: {
+              color: '#f4f0e6',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '16px',
+              '::placeholder': { color: '#6f6880' },
+            },
+            invalid: { color: '#ff3d5a' },
+          },
+        });
+        cardElement.mount('#cardElement');
+      } catch (err) {
+        console.error('[checkout] Stripe init failed:', err);
+        stripe = null; cardElement = null;
+        hasStripe = false;
+      }
+    }
     $('#cardWrap').style.display = hasStripe ? '' : 'none';
     $('#stripeMissing').hidden = hasStripe;
-    if (!hasStripe) return;
-    if (!stripe) {
-      stripe = window.Stripe(cfg.stripePublishableKey);
-      const elements = stripe.elements();
-      cardElement = elements.create('card', {
-        style: {
-          base: {
-            color: '#f4f0e6',
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '16px',
-            '::placeholder': { color: '#6f6880' },
-          },
-          invalid: { color: '#ff3d5a' },
-        },
-      });
-      cardElement.mount('#cardElement');
-    }
   }
 
   // STEP 2 → 3
@@ -631,6 +639,7 @@ const Checkout = (() => {
     } catch (err) {
       errEl.textContent = err.message;
       errEl.hidden = false;
+      toast(err.message); // errEl is inside #cardWrap, which is hidden when Stripe is unconfigured
     } finally {
       btn.disabled = false; btn.textContent = 'Pay Now';
     }

@@ -108,9 +108,12 @@ app.get('/health', (_req, res) => res.json({
 
 // ── GET /api/config ───────────────────────────────────────────────
 // Public runtime config for the storefront (publishable key only — never secrets).
-app.get('/api/config', (_req, res) => res.json({
-  stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null,
-}));
+// Guard: only pk_* keys may ever leave the server. If a secret (sk_*) key is
+// pasted into STRIPE_PUBLISHABLE_KEY by mistake, refuse to serve it.
+app.get('/api/config', (_req, res) => {
+  const key = process.env.STRIPE_PUBLISHABLE_KEY || '';
+  res.json({ stripePublishableKey: key.startsWith('pk_') ? key : null });
+});
 
 // ── POST /api/create-payment-intent ──────────────────────────────
 // Called before card charge. Returns clientSecret for Stripe.js.
@@ -409,4 +412,8 @@ app.listen(PORT, () => {
   console.log(`StippleCrown backend running on http://localhost:${PORT}`);
   if (!TOKEN) console.warn('[WARN] PRINTFUL_TOKEN is not set');
   if (!stripe) console.warn('[WARN] STRIPE_SECRET_KEY is not set');
+  const pub = process.env.STRIPE_PUBLISHABLE_KEY || '';
+  if (pub && !pub.startsWith('pk_')) {
+    console.error('[ERROR] STRIPE_PUBLISHABLE_KEY does not start with pk_ — it looks like a secret key. It will NOT be served to the storefront; card payments are disabled until a pk_ key is set.');
+  }
 });
