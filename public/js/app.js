@@ -99,6 +99,33 @@ const ARTWORKS = [
     desc: 'A peace sign poured in liquid gold over teal and blush marble. Soft power for bedrooms, studios, and calm corners.',
     story: 'Peace isn\'t the absence of a storm — it\'s the gold seam that holds you together after one. Poured in liquid gold across teal and blush marble, this is peace as the Japanese see it in kintsugi: the crack made precious, the healing made visible. Hang it in the corner where you exhale. Softness, it turns out, is its own kind of strength.',
   },
+  {
+    id: 'crowned-in-bloom',
+    title: 'Crowned in Bloom',
+    cat: 'portrait',
+    badge: 'New',
+    accent: '#f472b6',
+    desc: 'A woman rendered in wild bloom — petals for a crown, color for skin, unapologetic in every stroke. Soft and loud at once, entirely her own.',
+    story: 'They told her to pick a color and stay inside the lines. She chose all of them. Petals crown her where a lesser story would set gold, and every shade on her skin is a season she survived and decided to wear out loud. Hang her where you get ready in the morning — proof that blooming was never something you needed permission for.',
+  },
+  {
+    id: 'cosmic-kingdom',
+    title: 'Cosmic Kingdom',
+    cat: 'abstract',
+    badge: 'New',
+    accent: '#818cf8',
+    desc: 'A spiral galaxy turning in deep space, worlds scattered like jewels across the dark. A reminder of how small the word impossible really is.',
+    story: 'Everything that ever told you no would fit inside a single grain of this. A whole galaxy wheels through the black, worlds drifting past like loose change, and buried in all that light is the reminder you came for: you are made of the same fire, and you are here on purpose. Hang it where you dream — then dream bigger. The universe already placed its bet on you.',
+  },
+  {
+    id: 'born-of-kings',
+    title: 'Born of Kings',
+    cat: 'wildlife',
+    badge: 'Statement Piece',
+    accent: '#f0a742',
+    desc: 'Lion and tiger fused into one impossible sovereign — the largest cat that ever lived, carrying two bloodlines and bowing to neither.',
+    story: 'When a lion and a tiger share a bloodline, what comes next outgrows them both — the liger, the largest of all the great cats, born of two kings and answering to none. This one stares out of the cold with the calm of something that has nothing left to prove. Hang it where you set your standards. You don\'t come from one kind of strength — you come from all of it.',
+  },
 ];
 
 // Prices per material/size (retail USD). Sizes match the backend's Printful variant map.

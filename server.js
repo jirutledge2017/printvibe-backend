@@ -299,6 +299,9 @@ The Signature Collection (all available as Museum Poster, Gallery Canvas, Brushe
 - Golden Serpent — black snake laced with hand-set gold leaf. Story: the serpent means rebirth in every culture — shed the old skin, emerge gilded; for anyone who burned down an old version of themselves and came back worth more.
 - Rise Above — eagle breaking through a storm in gold light. Story: every other bird flees the storm; the eagle flies into it and rises higher than calm air allows. The thing trying to break you is what lifts you.
 - Gilded Peace — gold peace sign over teal/blush marble. Story: peace is the gold seam that holds you together after the storm — like kintsugi, the crack made precious. For the corner where you exhale.
+- Crowned in Bloom — a woman painted in wild pop-art color, petals for a crown. Story: they told her to pick a color and stay in the lines; she chose all of them. Every shade is a season she survived and wore out loud. Blooming never needed permission.
+- Cosmic Kingdom — a spiral galaxy turning in deep space, worlds scattered like jewels. Story: everything that ever told you no fits inside a single grain of this; you're made of the same fire, and you're here on purpose. Dream bigger — the universe already bet on you.
+- Born of Kings — a lion-tiger (liger) fused into one sovereign. Story: when a lion and tiger share a bloodline, the result outgrows them both — the largest of the great cats, born of two kings and answering to none. You don't come from one kind of strength; you come from all of it.
 
 Prices: Poster $24-$79 · Canvas $59-$159 · Metal $69-$189 · Framed $69-$169, by size.
 Customers can also upload their OWN photo in the "Print Your Own" studio and order it on any material.
