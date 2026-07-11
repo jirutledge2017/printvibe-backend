@@ -201,7 +201,9 @@ app.post('/api/create-order', async (req, res) => {
         zip:          address.zip,
       },
       items: orderItems,
-      confirm: false,
+      // confirm:true → paid orders are auto-submitted to Printful production
+      // (Printful charges the payment method on file). Was false (drafts) until 2026-07-10.
+      confirm: true,
     };
 
     const pfRes = await fetch(`${PRINTFUL_API}/orders`, {
