@@ -121,6 +121,10 @@
     </div>
     <div class="cu" data-reveal data-reveal-delay="120">
       <div class="cu__stage">
+        <div class="viewtabs viewtabs--cu" id="cuTabs" role="tablist" aria-label="Preview mode" hidden>
+          <button class="viewtab is-active" data-view="art" type="button">Your Photo</button>
+          <button class="viewtab" data-view="room" type="button">🛋 On Your Wall</button>
+        </div>
         <div class="cu__drop" id="cuDrop">
           <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4m0 0l-4 4m4-4l4 4"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
           <p><strong>Drop your photo here</strong></p>
@@ -131,6 +135,7 @@
           <img id="cuImg" src="" alt="Your photo preview" />
           <button class="btn btn--ghost cu__change" id="cuChange" type="button">Change photo</button>
         </figure>
+        <div class="room cu__room" id="cuRoom" aria-label="Your photo shown true to scale in a living room" hidden></div>
       </div>
       <aside class="cu__panel">
         <div class="panel__group">
@@ -145,7 +150,7 @@
           <div><span class="muted">Total</span><strong id="cuPrice">$0</strong></div>
           <button class="btn btn--gold btn--lg" id="cuAdd" disabled>Add to Cart</button>
         </div>
-        <p class="panel__note">For the sharpest large prints, use photos at least 2000px wide. Printed &amp; fulfilled by Printful.</p>
+        <p class="panel__note">Pick a size to see your photo true to scale on a wall. For the sharpest large prints, use photos at least 2000px wide. Printed &amp; fulfilled by Printful.</p>
       </aside>
     </div>
   </section>
@@ -299,7 +304,16 @@
     <div class="modal__panel modal__panel--product">
       <button class="iconbtn modal__close" data-close-modal aria-label="Close">✕</button>
       <div class="pm">
-        <div class="pm__art"><img id="pmImg" src="" alt="" /></div>
+        <div class="pm__art">
+          <div class="viewtabs" id="pmTabs" role="tablist" aria-label="Preview mode">
+            <button class="viewtab is-active" data-view="art" type="button">Artwork</button>
+            <button class="viewtab" data-view="room" type="button">🛋 On Your Wall</button>
+          </div>
+          <div class="pm__view is-active" id="pmArtView"><img id="pmImg" src="" alt="" /></div>
+          <div class="pm__view" id="pmRoomView">
+            <div class="room" id="pmRoom" aria-label="Your print shown true to scale in a living room"></div>
+          </div>
+        </div>
         <div class="pm__body">
           <span class="pm__cat" id="pmCat"></span>
           <h3 id="pmTitle"></h3>
