@@ -150,11 +150,13 @@ const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const ROOMS = {
   living: {
     label: 'Living Room',
-    photo: 'rooms/living-room.jpg',
+    photo: 'rooms/living-room.webp',
     aspect: [4, 3],
-    wallWidthIn: 110,
-    artCxPct: 50,
-    artBottomPct: 52,
+    // Calibrated off the sofa: it spans ~83% of the 1792px frame; at a real
+    // 90″ width that puts the photo's full span at ~108″.
+    wallWidthIn: 108,
+    artCxPct: 51.5,   // centered over the sofa
+    artBottomPct: 52, // ~9″ above the sofa back
   },
 };
 const DEFAULT_ROOM = 'living';
