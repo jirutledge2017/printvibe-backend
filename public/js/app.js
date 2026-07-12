@@ -141,6 +141,86 @@ const API = ''; // same origin
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+// ---------- "See it on your wall" room preview ----------
+// The scene is drawn in real-world inches so every size renders true to scale:
+// the stage spans a 110″-wide × 82.5″-tall slice of wall with an 84″ (7 ft)
+// sofa, and the print hangs a standard 8″ above the sofa back.
+const WALL = { wIn: 110, hIn: 82.5 };
+
+const ROOM_SOFA_SVG = `
+<svg class="room__sofa" viewBox="0 0 840 340" aria-hidden="true">
+  <rect x="70" y="306" width="20" height="30" rx="5" fill="#a8843f"/>
+  <rect x="750" y="306" width="20" height="30" rx="5" fill="#a8843f"/>
+  <rect x="55" y="70" width="730" height="184" rx="46" fill="#d8cdbb"/>
+  <rect x="120" y="88" width="192" height="132" rx="30" fill="#e4dbcb"/>
+  <rect x="324" y="88" width="192" height="132" rx="30" fill="#e4dbcb"/>
+  <rect x="528" y="88" width="192" height="132" rx="30" fill="#e4dbcb"/>
+  <rect x="148" y="118" width="112" height="106" rx="18" fill="#d9a441" transform="rotate(-6 204 171)"/>
+  <rect x="580" y="118" width="112" height="106" rx="18" fill="#d9a441" transform="rotate(6 636 171)"/>
+  <rect x="268" y="126" width="106" height="100" rx="18" fill="#efe8da" transform="rotate(4 321 176)"/>
+  <rect x="468" y="126" width="106" height="100" rx="18" fill="#efe8da" transform="rotate(-4 521 176)"/>
+  <rect x="95" y="212" width="322" height="58" rx="22" fill="#e0d6c5"/>
+  <rect x="423" y="212" width="322" height="58" rx="22" fill="#e0d6c5"/>
+  <rect x="40" y="252" width="760" height="62" rx="24" fill="#d3c7b4"/>
+  <rect x="8" y="118" width="98" height="198" rx="42" fill="#dcd2c0"/>
+  <rect x="734" y="118" width="98" height="198" rx="42" fill="#dcd2c0"/>
+</svg>`;
+
+const ROOM_PLANT_SVG = `
+<svg class="room__plant" viewBox="0 0 120 200" aria-hidden="true">
+  <path d="M60 122 C 30 92, 20 50, 34 16 C 52 48, 58 86, 60 122" fill="#5e7d54"/>
+  <path d="M60 122 C 90 90, 98 52, 86 18 C 68 50, 62 88, 60 122" fill="#6f8f63"/>
+  <path d="M60 126 C 44 102, 28 94, 8 94 C 26 120, 44 128, 60 130" fill="#54724c"/>
+  <path d="M60 126 C 76 102, 92 94, 112 94 C 94 120, 76 128, 60 130" fill="#63855a"/>
+  <path d="M56 122 h8 v18 h-8 z" fill="#4c6a45"/>
+  <path d="M38 140 h44 l-6 54 h-32 z" fill="#efe9df"/>
+  <rect x="34" y="134" width="52" height="12" rx="4" fill="#e2dbcd"/>
+</svg>`;
+
+const ROOM_DECOR_SVG = `
+<svg class="room__decor" viewBox="0 0 120 160" aria-hidden="true">
+  <circle cx="60" cy="46" r="26" fill="#d9a441"/>
+  <circle cx="51" cy="37" r="8" fill="#f3d78a"/>
+  <rect x="22" y="74" width="76" height="8" rx="3" fill="#c9a24a"/>
+  <rect x="56" y="82" width="8" height="60" rx="3" fill="#c9a24a"/>
+  <rect x="32" y="142" width="56" height="8" rx="3" fill="#b8913c"/>
+</svg>`;
+
+function buildRoom(root) {
+  root.innerHTML = `
+    <div class="room__wall">
+      <span class="room__panel" style="left:4%; top:7%; width:16%; height:56%"></span>
+      <span class="room__panel" style="left:25%; top:7%; width:50%; height:56%"></span>
+      <span class="room__panel" style="right:4%; top:7%; width:16%; height:56%"></span>
+      <span class="room__sconce room__sconce--l"></span>
+      <span class="room__sconce room__sconce--r"></span>
+    </div>
+    <div class="room__floor"></div>
+    <div class="room__rug"></div>
+    ${ROOM_SOFA_SVG}${ROOM_PLANT_SVG}${ROOM_DECOR_SVG}
+    <div class="room__art" data-mat="poster">
+      <img alt="Print shown to scale on the wall" />
+      <span class="room__dimw"></span>
+      <span class="room__dimh"></span>
+    </div>
+    <div class="room__caption"></div>`;
+}
+
+function updateRoom(root, { src, material, size }) {
+  if (!root.firstElementChild) buildRoom(root);
+  const [wIn, hIn] = size.split('x').map(Number);
+  const art = $('.room__art', root);
+  const img = $('img', art);
+  if (img.dataset.src !== src) { img.src = src; img.dataset.src = src; }
+  art.style.width = `${((wIn / WALL.wIn) * 100).toFixed(2)}%`;
+  art.style.height = `${((hIn / WALL.hIn) * 100).toFixed(2)}%`;
+  art.dataset.mat = material;
+  $('.room__dimw', art).textContent = `${wIn}″`;
+  $('.room__dimh', art).textContent = `${hIn}″`;
+  $('.room__caption', root).textContent =
+    `${PRICING[material].label} · ${SIZE_LABELS[size]} — shown true to scale`;
+}
 const money = (n) => `$${Number(n).toFixed(2)}`;
 const fromPrice = (id) => Math.min(...Object.values(PRICING.poster.sizes));
 
@@ -263,6 +343,7 @@ function renderGrid() {
         </picture>
         ${a.badge ? `<span class="art-card__badge">${a.badge}</span>` : ''}
         <div class="art-card__glare"></div>
+        <button class="art-card__wallbtn" type="button">🛋 See it on your wall</button>
       </div>
       <div class="art-card__body">
         <div>
@@ -280,6 +361,10 @@ function renderGrid() {
   $$('.art-card', grid).forEach((card) => {
     attachTilt(card, 6);
     card.addEventListener('click', () => openProduct(card.dataset.id));
+    $('.art-card__wallbtn', card).addEventListener('click', (e) => {
+      e.stopPropagation();
+      openProduct(card.dataset.id, 'room');
+    });
   });
 }
 renderGrid();
@@ -295,12 +380,33 @@ $('#filters').addEventListener('click', (e) => {
 
 // ---------- product modal ----------
 const productModal = $('#productModal');
-let pmState = { id: null, material: 'poster', size: '16x20' };
+let pmState = { id: null, material: 'poster', size: '16x20', view: 'art' };
 
-function openProduct(id) {
+function setPmView(view) {
+  pmState.view = view;
+  $$('#pmTabs .viewtab').forEach((t) => t.classList.toggle('is-active', t.dataset.view === view));
+  $('#pmArtView').classList.toggle('is-active', view === 'art');
+  $('#pmRoomView').classList.toggle('is-active', view === 'room');
+  if (view === 'room') updatePmRoom();
+}
+
+function updatePmRoom() {
+  updateRoom($('#pmRoom'), {
+    src: `art/${pmState.id}-web.jpg`,
+    material: pmState.material,
+    size: pmState.size,
+  });
+}
+
+$('#pmTabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.viewtab');
+  if (tab) setPmView(tab.dataset.view);
+});
+
+function openProduct(id, view = 'art') {
   const art = ARTWORKS.find((a) => a.id === id);
   if (!art) return;
-  pmState = { id, material: 'poster', size: '16x20' };
+  pmState = { id, material: 'poster', size: '16x20', view };
 
   $('#pmImg').src = `art/${id}-web.jpg`;
   $('#pmImg').alt = art.title;
@@ -315,6 +421,7 @@ function openProduct(id) {
   ).join('');
   renderSizes();
   updatePmPrice();
+  setPmView(view);
   openModal(productModal);
 }
 
@@ -337,6 +444,7 @@ $('#pmMaterials').addEventListener('click', (e) => {
   $$('#pmMaterials .chip').forEach((c) => c.classList.toggle('is-active', c.dataset.material === pmState.material));
   renderSizes();
   updatePmPrice();
+  if (pmState.view === 'room') updatePmRoom();
 });
 
 $('#pmSizes').addEventListener('click', (e) => {
@@ -345,6 +453,8 @@ $('#pmSizes').addEventListener('click', (e) => {
   pmState.size = chip.dataset.size;
   $$('#pmSizes .chip').forEach((c) => c.classList.toggle('is-active', c.dataset.size === pmState.size));
   updatePmPrice();
+  // choosing a size flips to the wall view so the true-to-scale change is visible
+  setPmView('room');
 });
 
 $('#pmAdd').addEventListener('click', () => {
@@ -685,7 +795,23 @@ const CustomStudio = (() => {
   const preview = $('#cuPreview');
   const img = $('#cuImg');
   const addBtn = $('#cuAdd');
-  let state = { material: 'canvas', size: '16x20', file: null, dataUrl: null };
+  const tabs = $('#cuTabs');
+  const room = $('#cuRoom');
+  let state = { material: 'canvas', size: '16x20', file: null, dataUrl: null, view: 'art' };
+
+  function setCuView(view) {
+    state.view = view;
+    $$('.viewtab', tabs).forEach((t) => t.classList.toggle('is-active', t.dataset.view === view));
+    const showRoom = view === 'room' && !!state.dataUrl;
+    room.hidden = !showRoom;
+    preview.hidden = showRoom || !state.dataUrl;
+    if (showRoom) updateRoom(room, { src: state.dataUrl, material: state.material, size: state.size });
+  }
+
+  tabs.addEventListener('click', (e) => {
+    const tab = e.target.closest('.viewtab');
+    if (tab) setCuView(tab.dataset.view);
+  });
 
   function renderChips() {
     $('#cuMaterials').innerHTML = Object.entries(PRICING).map(([key, m]) =>
@@ -703,12 +829,17 @@ const CustomStudio = (() => {
     if (!chip) return;
     state.material = chip.dataset.material;
     renderChips();
+    if (state.view === 'room' && state.dataUrl) {
+      updateRoom(room, { src: state.dataUrl, material: state.material, size: state.size });
+    }
   });
   $('#cuSizes').addEventListener('click', (e) => {
     const chip = e.target.closest('.chip');
     if (!chip) return;
     state.size = chip.dataset.size;
     renderChips();
+    // choosing a size flips to the wall view so the true-to-scale change is visible
+    if (state.dataUrl) setCuView('room');
   });
 
   function loadFile(file) {
@@ -726,9 +857,10 @@ const CustomStudio = (() => {
       state.dataUrl = reader.result;
       img.src = state.dataUrl;
       drop.hidden = true;
-      preview.hidden = false;
+      tabs.hidden = false;
       addBtn.disabled = false;
-      toast('Photo loaded — pick a material and size ✨');
+      setCuView('art');
+      toast('Photo loaded — pick a size to see it on your wall ✨');
     };
     reader.readAsDataURL(file);
   }
@@ -743,9 +875,12 @@ const CustomStudio = (() => {
 
   $('#cuChange').addEventListener('click', () => {
     preview.hidden = true;
+    room.hidden = true;
+    tabs.hidden = true;
     drop.hidden = false;
     addBtn.disabled = true;
-    state.file = null; state.dataUrl = null;
+    state.file = null; state.dataUrl = null; state.view = 'art';
+    $$('.viewtab', tabs).forEach((t) => t.classList.toggle('is-active', t.dataset.view === 'art'));
     input.value = '';
   });
 

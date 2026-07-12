@@ -426,10 +426,13 @@ section { position: relative; z-index: 2; }
 .pm { display: grid; grid-template-columns: 1fr 1fr; }
 .pm__art {
   background: radial-gradient(500px 400px at 50% 40%, rgba(232,182,76,0.10), transparent 70%), #0a0910;
-  display: grid; place-items: center; padding: 34px; min-height: 420px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; padding: 26px; min-height: 420px;
 }
-.pm__art img {
-  max-height: 520px; width: auto; max-width: 100%;
+.pm__view { display: none; width: 100%; }
+.pm__view.is-active { display: flex; align-items: center; justify-content: center; }
+#pmImg {
+  max-height: 480px; width: auto; max-width: 100%;
   border-radius: 10px;
   box-shadow: 0 34px 80px -20px rgba(0,0,0,0.9), 0 0 0 1px rgba(232,182,76,0.3);
 }
@@ -464,7 +467,7 @@ section { position: relative; z-index: 2; }
 }
 .pm__price-row strong { font-family: var(--font-display); font-size: 1.9rem; color: var(--gold-2); display: block; }
 .panel__note { font-size: 0.78rem; color: var(--ink-dim); margin-top: 16px; }
-@media (max-width: 800px) { .pm { grid-template-columns: 1fr; } .pm__art { min-height: 300px; } .pm__art img { max-height: 380px; } }
+@media (max-width: 800px) { .pm { grid-template-columns: 1fr; } .pm__art { min-height: 300px; } #pmImg { max-height: 380px; } }
 
 /* ---------- drawer / cart ---------- */
 .drawer {
@@ -732,6 +735,132 @@ section { position: relative; z-index: 2; }
 .chat__input input:focus { border-color: var(--gold); }
 .chat__input .btn { padding: 10px 18px; font-size: 0.85rem; }
 @media (max-width: 640px) { .chat__fab-label { display: none; } .chat__fab { padding: 14px 16px; } }
+
+/* ---------- "See it on your wall" room preview ---------- */
+.viewtabs {
+  display: inline-flex; gap: 4px; padding: 4px;
+  background: rgba(11,10,16,0.72); border: 1px solid var(--line); border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+.viewtab {
+  background: none; border: none; color: var(--ink-dim);
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.03em;
+  padding: 7px 15px; border-radius: 999px; transition: all 0.25s;
+}
+.viewtab:hover { color: var(--gold-2); }
+.viewtab.is-active {
+  background: linear-gradient(135deg, rgba(232,182,76,0.28), rgba(232,182,76,0.1));
+  color: var(--gold-2);
+}
+.viewtabs--cu { display: flex; width: max-content; margin: 0 auto 16px; }
+
+/* The stage maps a 110″ × 82.5″ slice of wall (4:3), so 1% of width = 1.1″ */
+.room {
+  position: relative; width: 100%; aspect-ratio: 4 / 3;
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 30px 70px -20px rgba(0,0,0,0.85), 0 0 0 1px rgba(232,182,76,0.25);
+}
+.room__wall {
+  position: absolute; inset: 0 0 14% 0;
+  background: linear-gradient(180deg, #f1ece4 0%, #e9e3d7 70%, #e2dbcd 100%);
+}
+.room__panel {
+  position: absolute; border: 2px solid rgba(120, 105, 80, 0.14); border-radius: 3px;
+}
+.room__panel::after {
+  content: ""; position: absolute; inset: 5px;
+  border: 1px solid rgba(120, 105, 80, 0.12); border-radius: 2px;
+}
+.room__sconce {
+  position: absolute; top: 24%; width: 1.4%; height: 17%;
+  background: linear-gradient(180deg, #e3c06a, #977434);
+  border-radius: 4px;
+  box-shadow: 0 0 34px 8px rgba(244, 214, 140, 0.55);
+}
+.room__sconce--l { left: 8%; }
+.room__sconce--r { right: 8%; }
+.room__floor {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 14%;
+  background: linear-gradient(180deg, #d9d0bd, #ccc1ab);
+}
+.room__floor::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px;
+  background: rgba(110, 95, 70, 0.25);
+}
+.room__rug {
+  position: absolute; bottom: 0.5%; left: 50%; transform: translateX(-50%);
+  width: 92%; height: 10%; border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.5), rgba(190,178,155,0.2) 65%, transparent 72%);
+}
+.room__sofa {
+  position: absolute; bottom: 2.5%; left: 50%; transform: translateX(-50%);
+  width: 76.4%; /* 84″ sofa on a 110″ wall */
+  filter: drop-shadow(0 12px 14px rgba(90, 75, 50, 0.35));
+}
+.room__plant { position: absolute; bottom: 2.5%; left: 1.5%; width: 11%; }
+.room__decor { position: absolute; bottom: 2.5%; right: 2.5%; width: 9%; }
+.room__art {
+  position: absolute; bottom: 52%; left: 50%; transform: translateX(-50%);
+  background: #14131a;
+  transition: width 0.5s cubic-bezier(.2,.7,.2,1), height 0.5s cubic-bezier(.2,.7,.2,1);
+  box-shadow: 0 8px 22px -5px rgba(60, 50, 30, 0.45);
+}
+.room__art img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+/* material finishes */
+.room__art[data-mat="poster"] { box-shadow: 0 5px 14px -4px rgba(60, 50, 30, 0.4); }
+.room__art[data-mat="canvas"] {
+  box-shadow: 4px 9px 22px -5px rgba(60, 50, 30, 0.55); /* 1.5″ gallery-wrap depth */
+}
+.room__art[data-mat="metal"] {
+  box-shadow: 6px 12px 26px -6px rgba(60, 50, 30, 0.55); /* float-mounted off the wall */
+}
+.room__art[data-mat="metal"]::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.32) 45%, transparent 60%);
+}
+.room__art[data-mat="framed"] {
+  border: 3px solid #1c1b21;
+  box-shadow: 0 8px 22px -4px rgba(50, 40, 25, 0.55);
+}
+.room__art[data-mat="framed"]::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, rgba(255,255,255,0.16) 0%, transparent 28%); /* glass glare */
+}
+/* dimension labels */
+.room__dimw, .room__dimh {
+  position: absolute; white-space: nowrap;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em;
+  color: #6b5f49; background: rgba(255, 255, 255, 0.8);
+  padding: 2px 9px; border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(80, 65, 40, 0.2);
+}
+.room__dimw { bottom: -10px; left: 50%; transform: translate(-50%, 100%); }
+.room__dimh { right: -10px; top: 50%; transform: translate(100%, -50%); }
+.room__caption {
+  position: absolute; bottom: 3.5%; left: 50%; transform: translateX(-50%);
+  max-width: 94%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: rgba(18, 15, 10, 0.75); color: #f0e2bd;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em;
+  padding: 6px 15px; border-radius: 999px;
+  border: 1px solid rgba(232, 182, 76, 0.35);
+  backdrop-filter: blur(6px);
+}
+/* collection card quick-preview button */
+.art-card__wallbtn {
+  position: absolute; bottom: 12px; left: 50%;
+  transform: translate(-50%, 8px); opacity: 0;
+  background: rgba(11, 10, 16, 0.78); border: 1px solid rgba(232, 182, 76, 0.45);
+  color: var(--gold-2); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.04em;
+  padding: 8px 14px; border-radius: 999px; white-space: nowrap;
+  backdrop-filter: blur(8px);
+  transition: opacity 0.3s, transform 0.3s, border-color 0.3s;
+}
+.art-card:hover .art-card__wallbtn, .art-card__wallbtn:focus-visible { opacity: 1; transform: translate(-50%, 0); }
+.art-card__wallbtn:hover { border-color: var(--gold); background: rgba(35, 27, 12, 0.85); }
+@media (hover: none) { .art-card__wallbtn { opacity: 1; transform: translate(-50%, 0); } }
+.cu__room { box-shadow: 0 40px 100px -25px rgba(0,0,0,0.9), 0 0 0 1px rgba(232,182,76,0.35); }
 
 /* ---------- toast ---------- */
 .toast {
