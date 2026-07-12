@@ -143,63 +143,28 @@ const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
 // ---------- "See it on your wall" room preview ----------
-// The scene is drawn in real-world inches so every size renders true to scale:
-// the stage spans a 110″-wide × 82.5″-tall slice of wall with an 84″ (7 ft)
-// sofa, and the print hangs a standard 8″ above the sofa back.
-const WALL = { wIn: 110, hIn: 82.5 };
+// A real room photograph with the print composited on top, true to scale.
+// Each room is calibrated in real-world inches: wallWidthIn is the physical
+// span the photo's full width covers (measured off a known object like an
+// 84″ sofa), artCxPct/artBottomPct anchor the print's center/bottom edge.
+const ROOMS = {
+  living: {
+    label: 'Living Room',
+    photo: 'rooms/living-room.jpg',
+    aspect: [4, 3],
+    wallWidthIn: 110,
+    artCxPct: 50,
+    artBottomPct: 52,
+  },
+};
+const DEFAULT_ROOM = 'living';
 
-const ROOM_SOFA_SVG = `
-<svg class="room__sofa" viewBox="0 0 840 340" aria-hidden="true">
-  <rect x="70" y="306" width="20" height="30" rx="5" fill="#a8843f"/>
-  <rect x="750" y="306" width="20" height="30" rx="5" fill="#a8843f"/>
-  <rect x="55" y="70" width="730" height="184" rx="46" fill="#d8cdbb"/>
-  <rect x="120" y="88" width="192" height="132" rx="30" fill="#e4dbcb"/>
-  <rect x="324" y="88" width="192" height="132" rx="30" fill="#e4dbcb"/>
-  <rect x="528" y="88" width="192" height="132" rx="30" fill="#e4dbcb"/>
-  <rect x="148" y="118" width="112" height="106" rx="18" fill="#d9a441" transform="rotate(-6 204 171)"/>
-  <rect x="580" y="118" width="112" height="106" rx="18" fill="#d9a441" transform="rotate(6 636 171)"/>
-  <rect x="268" y="126" width="106" height="100" rx="18" fill="#efe8da" transform="rotate(4 321 176)"/>
-  <rect x="468" y="126" width="106" height="100" rx="18" fill="#efe8da" transform="rotate(-4 521 176)"/>
-  <rect x="95" y="212" width="322" height="58" rx="22" fill="#e0d6c5"/>
-  <rect x="423" y="212" width="322" height="58" rx="22" fill="#e0d6c5"/>
-  <rect x="40" y="252" width="760" height="62" rx="24" fill="#d3c7b4"/>
-  <rect x="8" y="118" width="98" height="198" rx="42" fill="#dcd2c0"/>
-  <rect x="734" y="118" width="98" height="198" rx="42" fill="#dcd2c0"/>
-</svg>`;
-
-const ROOM_PLANT_SVG = `
-<svg class="room__plant" viewBox="0 0 120 200" aria-hidden="true">
-  <path d="M60 122 C 30 92, 20 50, 34 16 C 52 48, 58 86, 60 122" fill="#5e7d54"/>
-  <path d="M60 122 C 90 90, 98 52, 86 18 C 68 50, 62 88, 60 122" fill="#6f8f63"/>
-  <path d="M60 126 C 44 102, 28 94, 8 94 C 26 120, 44 128, 60 130" fill="#54724c"/>
-  <path d="M60 126 C 76 102, 92 94, 112 94 C 94 120, 76 128, 60 130" fill="#63855a"/>
-  <path d="M56 122 h8 v18 h-8 z" fill="#4c6a45"/>
-  <path d="M38 140 h44 l-6 54 h-32 z" fill="#efe9df"/>
-  <rect x="34" y="134" width="52" height="12" rx="4" fill="#e2dbcd"/>
-</svg>`;
-
-const ROOM_DECOR_SVG = `
-<svg class="room__decor" viewBox="0 0 120 160" aria-hidden="true">
-  <circle cx="60" cy="46" r="26" fill="#d9a441"/>
-  <circle cx="51" cy="37" r="8" fill="#f3d78a"/>
-  <rect x="22" y="74" width="76" height="8" rx="3" fill="#c9a24a"/>
-  <rect x="56" y="82" width="8" height="60" rx="3" fill="#c9a24a"/>
-  <rect x="32" y="142" width="56" height="8" rx="3" fill="#b8913c"/>
-</svg>`;
-
-function buildRoom(root) {
+function buildRoom(root, room) {
+  root.style.aspectRatio = `${room.aspect[0]} / ${room.aspect[1]}`;
   root.innerHTML = `
-    <div class="room__wall">
-      <span class="room__panel" style="left:4%; top:7%; width:16%; height:56%"></span>
-      <span class="room__panel" style="left:25%; top:7%; width:50%; height:56%"></span>
-      <span class="room__panel" style="right:4%; top:7%; width:16%; height:56%"></span>
-      <span class="room__sconce room__sconce--l"></span>
-      <span class="room__sconce room__sconce--r"></span>
-    </div>
-    <div class="room__floor"></div>
-    <div class="room__rug"></div>
-    ${ROOM_SOFA_SVG}${ROOM_PLANT_SVG}${ROOM_DECOR_SVG}
-    <div class="room__art" data-mat="poster">
+    <img class="room__photo" src="${room.photo}" alt="" aria-hidden="true" />
+    <div class="room__art" data-mat="poster"
+         style="left:${room.artCxPct}%; bottom:${room.artBottomPct}%">
       <img alt="Print shown to scale on the wall" />
       <span class="room__dimw"></span>
       <span class="room__dimh"></span>
@@ -207,20 +172,41 @@ function buildRoom(root) {
     <div class="room__caption"></div>`;
 }
 
-function updateRoom(root, { src, material, size }) {
-  if (!root.firstElementChild) buildRoom(root);
+function updateRoom(root, { src, material, size, roomId = DEFAULT_ROOM }) {
+  const room = ROOMS[roomId];
+  if (root.dataset.room !== roomId) { buildRoom(root, room); root.dataset.room = roomId; }
   const [wIn, hIn] = size.split('x').map(Number);
+  const wallHeightIn = room.wallWidthIn * (room.aspect[1] / room.aspect[0]);
   const art = $('.room__art', root);
   const img = $('img', art);
   if (img.dataset.src !== src) { img.src = src; img.dataset.src = src; }
-  art.style.width = `${((wIn / WALL.wIn) * 100).toFixed(2)}%`;
-  art.style.height = `${((hIn / WALL.hIn) * 100).toFixed(2)}%`;
+  art.style.width = `${((wIn / room.wallWidthIn) * 100).toFixed(2)}%`;
+  art.style.height = `${((hIn / wallHeightIn) * 100).toFixed(2)}%`;
   art.dataset.mat = material;
   $('.room__dimw', art).textContent = `${wIn}″`;
   $('.room__dimh', art).textContent = `${hIn}″`;
   $('.room__caption', root).textContent =
     `${PRICING[material].label} · ${SIZE_LABELS[size]} — shown true to scale`;
+  syncArtScale(root, room, wIn);
 }
+
+// Frame/wrap thickness must scale with the print's real size: a 1″ frame is a
+// third of an 8×10's short edge but barely anything on a 24×36. Convert 1″ to
+// on-screen pixels from the rendered stage width.
+function syncArtScale(root, room, artWIn) {
+  const art = $('.room__art', root);
+  if (!art) return;
+  const stageW = root.clientWidth;
+  if (!stageW) return;
+  const pxPerIn = stageW / room.wallWidthIn;
+  art.style.setProperty('--in', `${pxPerIn.toFixed(3)}px`);
+}
+window.addEventListener('resize', () => {
+  $$('.room[data-room]').forEach((root) => {
+    const room = ROOMS[root.dataset.room];
+    if (room && !root.hidden) syncArtScale(root, room, 0);
+  });
+});
 const money = (n) => `$${Number(n).toFixed(2)}`;
 const fromPrice = (id) => Math.min(...Object.values(PRICING.poster.sizes));
 
